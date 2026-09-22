@@ -1107,8 +1107,7 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
       <div class="count" id="item-count">০টি ব্র্যান্ড আছে</div>
       <div class="dl-buttons">
         <button class="dl-btn pdf" id="dl-pdf">⬇ PDF</button>
-        <button class="dl-btn xlsx" id="dl-xlsx">⬇ Excel</button>
-      </div>
+        </div>
     </div>
     <div class="grid" id="grid"></div>
     <div class="empty-state" id="empty-state" style="display:none;">
@@ -1121,7 +1120,7 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
   <!-- RANK / SORT TAB -->
   <div class="cat-panel" id="panel-rank">
     <div class="rank-hint">
-      ⠿ হ্যান্ডেল ধরে টেনে নিয়ে ব্র্যান্ডগুলো আপনার পছন্দের ক্রমে সাজান। ক্রম স্বয়ংক্রিয়ভাবে সংরক্ষিত হবে।
+      ⠿ ব্র্যান্ডগুলো আপনার পছন্দের ক্রমে সাজান। ক্রম স্বয়ংক্রিয়ভাবে সংরক্ষিত হবে।
     </div>
     <div class="rank-list" id="rank-list"></div>
     <div class="empty-state" id="rank-empty" style="display:none;">
@@ -2419,21 +2418,6 @@ document.getElementById('dl-pdf').addEventListener('click', () => {
 
   doc.save('eco_brand_catalog.pdf');
 });
-
-/* ——— Excel Export ——— */
-document.getElementById('dl-xlsx').addEventListener('click', () => {
-  const rows = items.map((it, i) => ({
-    'ক্রম': i + 1,
-    'ব্র্যান্ডের নাম': it.name,
-    'বিবরণ': it.desc || ''
-  }));
-  const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{ wch: 6 }, { wch: 28 }, { wch: 50 }];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Brands');
-  XLSX.writeFile(wb, 'eco_brand_catalog.xlsx');
-});
-
 
 </script>
 </body>
