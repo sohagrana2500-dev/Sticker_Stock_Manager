@@ -939,7 +939,7 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
       </button>
       <div>
         <h1>Sticker Stock Management</h1>
-        <div class="sub">CW &amp; HW · Sticker calculation software</div>
+        <div class="sub">CW &amp; HW · EXTRA USE = Closing − Production − Manual · Manual values saved per month</div>
       </div>
       <div class="period">
         <div><label>Year</label>
@@ -1019,7 +1019,7 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
         <tbody></tbody>
       </table>
     </div>
-    
+    <p class="footer-note">ম্যানুয়াল ফিল্ড (Printed St, Soft Winding Use) প্রতি মাসে আলাদা সেভ হয় — আগের মাস দেখলে সেই মাসের মানই দেখাবে।</p>
   </div>
 </div>
 
@@ -1070,8 +1070,8 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
         <h1><span class="eco">eco</span> Brand Catalog</h1>
       </div>
     </div>
-    <div class="sub">ব্র্যান্ডের নাম ও ছবি যোগ করুন · সংগ্রহ থেকে PDF ডাউনলোড করুন </div>
-    
+    <div class="sub">ব্র্যান্ডের নাম ও ছবি যোগ করুন · সংগ্রহ থেকে PDF বা Excel ডাউনলোড করুন · র‍্যাঙ্ক অনুযায়ী সাজান</div>
+    <div class="sub-note">ডেটা ক্লাউডে (Supabase, লাইভ) সংরক্ষিত থাকে — যেকোনো ব্রাউজার থেকে লগইন করলে একই ডেটা দেখা যাবে</div>
   </header>
 
   <div class="cat-tabs">
@@ -1107,7 +1107,8 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
       <div class="count" id="item-count">০টি ব্র্যান্ড আছে</div>
       <div class="dl-buttons">
         <button class="dl-btn pdf" id="dl-pdf">⬇ PDF</button>
-        </div>
+        <button class="dl-btn xlsx" id="dl-xlsx">⬇ Excel</button>
+      </div>
     </div>
     <div class="grid" id="grid"></div>
     <div class="empty-state" id="empty-state" style="display:none;">
@@ -1120,7 +1121,7 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
   <!-- RANK / SORT TAB -->
   <div class="cat-panel" id="panel-rank">
     <div class="rank-hint">
-      ⠿ ব্র্যান্ডগুলো আপনার পছন্দের ক্রমে সাজান। ক্রম স্বয়ংক্রিয়ভাবে সংরক্ষিত হবে।
+      ⠿ হ্যান্ডেল ধরে টেনে নিয়ে ব্র্যান্ডগুলো আপনার পছন্দের ক্রমে সাজান। ক্রম স্বয়ংক্রিয়ভাবে সংরক্ষিত হবে।
     </div>
     <div class="rank-list" id="rank-list"></div>
     <div class="empty-state" id="rank-empty" style="display:none;">
@@ -2418,6 +2419,7 @@ document.getElementById('dl-pdf').addEventListener('click', () => {
 
   doc.save('eco_brand_catalog.pdf');
 });
+
 /* ——— Excel Export ——— */
 document.getElementById('dl-xlsx').addEventListener('click', () => {
   const rows = items.map((it, i) => ({
@@ -2431,7 +2433,8 @@ document.getElementById('dl-xlsx').addEventListener('click', () => {
   XLSX.utils.book_append_sheet(wb, ws, 'Brands');
   XLSX.writeFile(wb, 'eco_brand_catalog.xlsx');
 });
-  
+
+
 </script>
 </body>
 </html>
