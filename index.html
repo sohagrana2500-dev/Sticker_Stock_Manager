@@ -2418,7 +2418,20 @@ document.getElementById('dl-pdf').addEventListener('click', () => {
 
   doc.save('eco_brand_catalog.pdf');
 });
-
+/* ——— Excel Export ——— */
+document.getElementById('dl-xlsx').addEventListener('click', () => {
+  const rows = items.map((it, i) => ({
+    'ক্রম': i + 1,
+    'ব্র্যান্ডের নাম': it.name,
+    'বিবরণ': it.desc || ''
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{ wch: 6 }, { wch: 28 }, { wch: 50 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Brands');
+  XLSX.writeFile(wb, 'eco_brand_catalog.xlsx');
+});
+  
 </script>
 </body>
 </html>
