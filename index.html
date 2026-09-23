@@ -1047,6 +1047,17 @@ input.cell-input {
   border-color: #c8e6c9;
 }
 
+
+#brandTable tbody tr.brand-drag-row { cursor: grab; }
+#brandTable tbody tr.brand-drag-row.dragging { opacity: 0.45; cursor: grabbing; background: #e0e7ff !important; }
+#brandTable tbody tr.brand-drag-row.drag-over { box-shadow: inset 0 3px 0 #2b6cb0; }
+#brandTable .drag-handle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 6px; color: #64748b;
+  font-size: 16px; cursor: grab; user-select: none;
+}
+#brandTable .drag-handle:hover { background: #e2e8f0; color: #1e293b; }
+
 </style>
 </head>
 <body>
@@ -1095,11 +1106,7 @@ input.cell-input {
         <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg></span>
         <span class="nav-label">Production Upload</span>
       </button>
-      <button class="tab" data-tab="catalog" onclick="showTab('catalog')" title="eco Brand Catalog">
-        <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
-        <span class="nav-label">eco Brand Catalog</span>
-      </button>
-      <button class="tab" data-tab="settings" onclick="showTab('settings')" title="Settings">
+<button class="tab" data-tab="settings" onclick="showTab('settings')" title="Settings">
         <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span>
         <span class="nav-label">সেটিংস</span>
       </button>
@@ -1137,17 +1144,73 @@ input.cell-input {
     <div id="msg" class="msg"></div>
 
 <div id="tab-brands" class="panel">
-  <div class="card"><h2>Add New Brand</h2>
+  <div class="card">
+    <h2>Add New Brand</h2>
+    <p class="footer-note">নাম + Type আবশ্যক · ছবি অপশনাল · সিরিয়াল টেনে সাজান · PDF ডাউনলোড করা যাবে</p>
     <div class="row">
       <div><label>Brand Name</label><input type="text" id="newBrandName" placeholder="e.g. NEW SOFT"></div>
-      <div><label>Type</label><select id="newBrandType"><option value="CW">CW</option><option value="HW">HW</option><option value="Manual">Manual</option></select></div>
+      <div><label>Type</label>
+        <select id="newBrandType">
+          <option value="CW">CW</option>
+          <option value="HW">HW</option>
+          <option value="Manual">Manual</option>
+        </select>
+      </div>
+      <div>
+        <label>ছবি (অপশনাল)</label>
+        <input type="file" id="newBrandImage" accept="image/*" style="min-width:180px">
+      </div>
       <button class="btn btn-primary" onclick="addBrand()">+ Add Brand</button>
+      <button class="btn btn-secondary" onclick="previewBrandsPDF()">👁 PDF Preview</button>
+      <button class="btn btn-secondary" onclick="downloadBrandsPDF()">⬇ PDF</button>
+    </div>
+    <div id="newBrandImagePreview" style="display:none;margin-top:10px">
+      <img id="newBrandImageImg" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0">
+      <button type="button" class="btn btn-secondary" style="margin-left:8px;padding:4px 10px;font-size:.75rem" onclick="clearNewBrandImage()">ছবি সরান</button>
     </div>
   </div>
-  <div class="card"><h2>Brand List (<span id="brandCount">0</span>)</h2>
-    <div class="table-wrap"><table id="brandTable"><thead><tr><th>#</th><th>Brand Name</th><th>Type</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table></div>
+  <div class="card">
+    <h2>Brand List (<span id="brandCount">0</span>)</h2>
+    <p class="footer-note">⠿ টেনে সিরিয়াল বদলান — Daily Entry / Summary একই ক্রমে · ছবি থাকলে 👁 ভিউ</p>
+    <div class="table-wrap">
+      <table id="brandTable">
+        <thead>
+          <tr>
+            <th>#</th><th>সিরিয়াল</th><th>ছবি</th><th>Brand Name</th><th>Type</th><th>Status</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
 </div>
+
+<!-- Brand image view modal -->
+<div id="brandImgModal" class="no-print" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(11,18,48,.55);align-items:center;justify-content:center" onclick="if(event.target===this)closeBrandImg()">
+  <div style="background:#fff;border-radius:16px;padding:20px;max-width:420px;width:90%;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.25)">
+    <img id="brandImgModalImg" alt="" style="max-width:100%;max-height:320px;border-radius:12px;object-fit:contain">
+    <div id="brandImgModalName" style="margin-top:12px;font-weight:700;font-size:1.05rem;color:#1a365d"></div>
+    <button class="btn btn-secondary" style="margin-top:14px" onclick="closeBrandImg()">বন্ধ</button>
+  </div>
+</div>
+
+<!-- PDF Preview Modal -->
+<div id="pdfPreviewModal" class="no-print" style="display:none;position:fixed;inset:0;z-index:210;background:rgba(11,18,48,.6);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closePdfPreview()">
+  <div style="background:#fff;border-radius:16px;width:min(920px,96vw);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(0,0,0,.3)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #e2e8f0">
+      <b style="color:#1a365d">PDF Preview</b>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="downloadBrandsPDF()">⬇ Download</button>
+        <button class="btn btn-secondary" onclick="closePdfPreview()">বন্ধ</button>
+      </div>
+    </div>
+    <div id="pdfPreviewBody" style="overflow:auto;padding:16px;background:#e8ecf4;flex:1">
+      <div id="pdfPreviewPage" style="background:#fff;max-width:210mm;margin:0 auto;padding:12mm;box-shadow:0 4px 20px rgba(0,0,0,.12);font-family:Segoe UI,Tahoma,sans-serif">
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <div id="tab-entry" class="panel active">
   <div class="card">
@@ -1830,6 +1893,157 @@ function getMonthProdHW(y, m) {
   return 0;
 }
 
+
+var pendingBrandImage = null;
+(function setupBrandImageInput(){
+  document.addEventListener("change", function(e) {
+    if (e.target && e.target.id === "newBrandImage") {
+      var file = e.target.files && e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        pendingBrandImage = ev.target.result;
+        var box = document.getElementById("newBrandImagePreview");
+        var img = document.getElementById("newBrandImageImg");
+        if (img) img.src = pendingBrandImage;
+        if (box) box.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+})();
+function clearNewBrandImage() {
+  pendingBrandImage = null;
+  var inp = document.getElementById("newBrandImage");
+  if (inp) inp.value = "";
+  var box = document.getElementById("newBrandImagePreview");
+  if (box) box.style.display = "none";
+}
+function viewBrandImage(idx) {
+  var b = brands[idx];
+  if (!b || !b.image) { showMsg("এই ব্র্যান্ডে ছবি নেই", false); return; }
+  document.getElementById("brandImgModalImg").src = b.image;
+  document.getElementById("brandImgModalName").textContent = b.name;
+  var m = document.getElementById("brandImgModal");
+  m.style.display = "flex";
+}
+function closeBrandImg() {
+  document.getElementById("brandImgModal").style.display = "none";
+}
+function setBrandImage(idx) {
+  var inp = document.createElement("input");
+  inp.type = "file";
+  inp.accept = "image/*";
+  inp.onchange = function() {
+    var file = inp.files && inp.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      brands[idx].image = ev.target.result;
+      saveData();
+      renderBrands();
+      showMsg("ছবি যোগ: " + brands[idx].name);
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+}
+
+function closePdfPreview() {
+  var m = document.getElementById("pdfPreviewModal");
+  if (m) m.style.display = "none";
+}
+function previewBrandsPDF() {
+  var page = document.getElementById("pdfPreviewPage");
+  var modal = document.getElementById("pdfPreviewModal");
+  if (!page || !modal) return;
+  var list = brands.filter(function(b) { return b.active !== false; });
+  var html = '<div style="text-align:center;margin-bottom:14px">' +
+    '<div style="font-size:18px;font-weight:800;color:#1a1f36">eco — Our Used Brand</div>' +
+    '<div style="font-size:12px;color:#888;margin-top:2px">Color City Ltd</div></div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 12px">';
+  list.forEach(function(b) {
+    var img = b.image
+      ? '<img src="' + String(b.image).replace(/"/g, "&quot;") + '" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0">'
+      : '<div style="width:56px;height:56px;border-radius:6px;background:#f1f5f9;border:1px solid #e2e8f0;flex-shrink:0"></div>';
+    html += '<div style="display:flex;gap:8px;align-items:flex-start;min-height:56px">' +
+      img +
+      '<div style="min-width:0"><div style="font-weight:700;font-size:13px;color:#1a1f36;line-height:1.25;word-break:break-word">' +
+      String(b.name || "").replace(/</g, "&lt;") +
+      '</div><div style="font-size:11px;color:#6b7280;margin-top:3px">' +
+      String(b.type || "").replace(/</g, "&lt;") +
+      (b.desc ? " · " + String(b.desc).replace(/</g, "&lt;") : "") +
+      "</div></div></div>";
+  });
+  html += "</div>";
+  if (!list.length) {
+    html += '<p style="text-align:center;color:#888;margin-top:24px">কোনো সক্রিয় ব্র্যান্ড নেই</p>';
+  }
+  page.innerHTML = html;
+  modal.style.display = "flex";
+}
+
+function downloadBrandsPDF() {
+  if (typeof window.jspdf === "undefined" || !window.jspdf.jsPDF) {
+    showMsg("PDF লাইব্রেরি লোড হয়নি — ইন্টারনেট চেক করুন", false);
+    return;
+  }
+  var { jsPDF } = window.jspdf;
+  var doc = new jsPDF({ unit: "mm", format: "a4" });
+  var pageW = 210, margin = 12;
+  var colW = (pageW - margin * 2) / 3;
+  var imgSize = 22, rowH = 30;
+  var x = margin, y = 22, col = 0;
+
+  doc.setFontSize(16);
+  doc.setFont(undefined, "bold");
+  doc.text("eco — Our Used Brand", pageW / 2, 14, { align: "center" });
+  doc.setFontSize(9);
+  doc.setTextColor(120);
+  doc.setFont(undefined, "normal");
+  doc.text("Color City Ltd", pageW / 2, 19, { align: "center" });
+  doc.setTextColor(20);
+
+  var list = brands.filter(function(b) { return b.active !== false; });
+  list.forEach(function(b) {
+    if (y + rowH > 285) {
+      doc.addPage();
+      y = 20; col = 0; x = margin;
+    }
+    if (b.image) {
+      try { doc.addImage(b.image, "JPEG", x, y, imgSize, imgSize); }
+      catch (e) {
+        try { doc.addImage(b.image, "PNG", x, y, imgSize, imgSize); } catch (e2) {}
+      }
+    } else {
+      doc.setDrawColor(200);
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(x, y, imgSize, imgSize, 1, 1, "FD");
+    }
+    doc.setFontSize(10);
+    doc.setFont(undefined, "bold");
+    var nameLines = doc.splitTextToSize(b.name || "", colW - imgSize - 4);
+    doc.text(nameLines, x + imgSize + 3, y + 6);
+    doc.setFont(undefined, "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(110);
+    var sub = (b.type || "") + (b.desc ? " · " + b.desc : "");
+    var descLines = doc.splitTextToSize(sub, colW - imgSize - 4);
+    doc.text(descLines.slice(0, 3), x + imgSize + 3, y + 12);
+    doc.setTextColor(20);
+
+    col++;
+    if (col === 3) {
+      col = 0; x = margin; y += rowH;
+    } else {
+      x += colW;
+    }
+  });
+
+  doc.save("eco_brand_catalog.pdf");
+  showMsg("PDF ডাউনলোড হয়েছে");
+}
+
 function addBrand() {
   var name = document.getElementById("newBrandName").value.trim();
   var type = document.getElementById("newBrandType").value;
@@ -1837,7 +2051,7 @@ function addBrand() {
   if (brands.some(function(b){ return b.name.toUpperCase()===name.toUpperCase(); })) {
     showMsg("Already exists", false); return;
   }
-  brands.push({name:name, type:type});
+  brands.push({name:name, type:type, active:true, image: pendingBrandImage || ""});
   Object.keys(data).forEach(function(y){
     Object.keys(data[y]).forEach(function(m){
       data[y][m].pstock[name]=0; data[y][m].nstock[name]=0;
@@ -1845,6 +2059,7 @@ function addBrand() {
     });
   });
   document.getElementById("newBrandName").value="";
+  clearNewBrandImage();
   saveData(); renderBrands(); renderEntry(); renderSummary();
   showMsg("Added: "+name);
 }
@@ -1867,13 +2082,83 @@ function renderBrands() {
     var delBtn = (b.name === "BLANK" || (b.name && b.name.indexOf("BOXL") >= 0))
       ? '<span style="color:#a0aec0">Protected</span>'
       : '<button class="btn btn-danger" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="deleteBrand(' + i + ')">ডিলেট</button>';
-    return "<tr" + (b.active ? "" : ' style="opacity:0.55"') + "><td>" + (i + 1) +
+    var upBtn = i === 0
+      ? '<button class="btn btn-secondary" style="padding:2px 7px;font-size:0.75rem;margin:1px;opacity:0.35" disabled>▲</button>'
+      : '<button class="btn btn-secondary" style="padding:2px 7px;font-size:0.75rem;margin:1px" onclick="moveBrand(' + i + ',-1)" title="উপরে">▲</button>';
+    var downBtn = i === brands.length - 1
+      ? '<button class="btn btn-secondary" style="padding:2px 7px;font-size:0.75rem;margin:1px;opacity:0.35" disabled>▼</button>'
+      : '<button class="btn btn-secondary" style="padding:2px 7px;font-size:0.75rem;margin:1px" onclick="moveBrand(' + i + ',1)" title="নিচে">▼</button>';
+    var imgCell = b.image
+      ? '<img src="' + b.image.replace(/"/g, "&quot;") + '" alt="" style="width:36px;height:36px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #e2e8f0" onclick="viewBrandImage(' + i + ')">'
+      : '<span style="color:#cbd5e0;font-size:.75rem">—</span>';
+    var viewBtn = b.image
+      ? '<button class="btn btn-primary" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="viewBrandImage(' + i + ')">👁</button>'
+      : '';
+    var photoBtn = '<button class="btn btn-secondary" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="setBrandImage(' + i + ')" title="ছবি যোগ/বদল">📷</button>';
+    return '<tr class="brand-drag-row" draggable="true" data-idx="' + i + '"' + (b.active ? "" : ' style="opacity:0.55"') + "><td>" + (i + 1) +
+      '</td><td style="white-space:nowrap"><span class="drag-handle" title="টেনে সরান">⠿</span> ' + upBtn + downBtn +
+      '</td><td>' + imgCell +
       '</td><td style="text-align:left;font-weight:600">' + b.name +
       '</td><td><span class="badge badge-' + b.type.toLowerCase() + '">' + b.type +
-      "</span></td><td>" + statusBadge + "</td><td>" + toggleBtn + " " + delBtn + "</td></tr>";
+      "</span></td><td>" + statusBadge + "</td><td>" + viewBtn + photoBtn + " " + toggleBtn + " " + delBtn + "</td></tr>";
   }).join("");
+  setupBrandDrag();
 }
 
+function moveBrand(idx, dir) {
+  var j = idx + dir;
+  if (j < 0 || j >= brands.length) return;
+  var tmp = brands[idx];
+  brands[idx] = brands[j];
+  brands[j] = tmp;
+  saveData();
+  renderBrands();
+  renderEntry();
+  renderSummary();
+  showMsg("সিরিয়াল আপডেট: " + brands[j].name);
+}
+
+function setupBrandDrag() {
+  var tbody = document.querySelector("#brandTable tbody");
+  if (!tbody) return;
+  var dragIdx = null;
+  tbody.querySelectorAll("tr.brand-drag-row").forEach(function(row) {
+    row.addEventListener("dragstart", function(e) {
+      dragIdx = parseInt(row.getAttribute("data-idx"), 10);
+      row.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      try { e.dataTransfer.setData("text/plain", String(dragIdx)); } catch (err) {}
+    });
+    row.addEventListener("dragend", function() {
+      row.classList.remove("dragging");
+      tbody.querySelectorAll("tr.brand-drag-row").forEach(function(r) { r.classList.remove("drag-over"); });
+      dragIdx = null;
+    });
+    row.addEventListener("dragover", function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      tbody.querySelectorAll("tr.brand-drag-row").forEach(function(r) { r.classList.remove("drag-over"); });
+      row.classList.add("drag-over");
+    });
+    row.addEventListener("dragleave", function() {
+      row.classList.remove("drag-over");
+    });
+    row.addEventListener("drop", function(e) {
+      e.preventDefault();
+      row.classList.remove("drag-over");
+      var toIdx = parseInt(row.getAttribute("data-idx"), 10);
+      var fromIdx = dragIdx;
+      if (fromIdx === null || isNaN(fromIdx) || isNaN(toIdx) || fromIdx === toIdx) return;
+      var item = brands.splice(fromIdx, 1)[0];
+      brands.splice(toIdx, 0, item);
+      saveData();
+      renderBrands();
+      renderEntry();
+      renderSummary();
+      showMsg("সিরিয়াল আপডেট (ড্র্যাগ)");
+    });
+  });
+}
 
 function toggleBrand(idx) {
   if (brands[idx].active === undefined) brands[idx].active = true;
@@ -1886,6 +2171,7 @@ function toggleBrand(idx) {
 }
 
 function activeBrands() {
+  /* Brand List-এর সিরিয়াল অনুযায়ী — array order preserve */
   return brands.filter(function(b) { return b.active !== false; });
 }
 
@@ -2483,7 +2769,9 @@ let items = [];
 let pendingImage = null;
 
 async function loadItems() {
-  if (!sbClient || !window.SSCM_TOKEN) { items = []; renderAll(); return; }
+  if (!sbClient || !window.SSCM_TOKEN) { items = []; renderAll();
+    if (typeof renderEntry === 'function') renderEntry();
+    if (typeof renderSummary === 'function') renderSummary(); return; }
   try {
     const { data, error } = await sbClient.rpc('ss_brands_list', { p_token: window.SSCM_TOKEN });
     if (!error && data) {
@@ -2496,12 +2784,15 @@ async function loadItems() {
           _sort: r.sort_order != null ? r.sort_order : i
         };
       });
+      items.sort(function(a, b) { return (a._sort || 0) - (b._sort || 0); });
     } else {
       if (error) console.warn('brand cloud load', error.message);
       items = [];
     }
   } catch (e) { console.warn(e); items = []; }
   renderAll();
+  if (typeof renderEntry === 'function') renderEntry();
+  if (typeof renderSummary === 'function') renderSummary();
 }
 
 async function saveItems() {
@@ -2850,6 +3141,8 @@ function setupDragAndDrop(list) {
       saveItems();
       renderRankList(); // refresh numbers
       renderGrid();
+      if (typeof renderEntry === "function") renderEntry();
+      if (typeof renderSummary === "function") renderSummary();
     });
 
     item.addEventListener('dragover', e => {
