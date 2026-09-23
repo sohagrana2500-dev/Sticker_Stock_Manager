@@ -867,6 +867,186 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
     .crop-circle-wrap canvas { width: 240px; height: 240px; }
   }
 
+
+/* Entry table: sticky SL / Date / Type so they stay visible while scrolling */
+#entryTableWrap{position:relative}
+#entryTable{border-collapse:separate;border-spacing:0}
+#entryTable th,#entryTable td{background-clip:padding-box}
+#entryTable thead th{position:sticky;top:0;z-index:6}
+#entryTable th.sticky-col,#entryTable td.sticky-col{
+  position:sticky;left:0;z-index:4;
+  background:#fff;
+  box-shadow:2px 0 4px rgba(0,0,0,.08);
+}
+#entryTable thead th.sticky-col{z-index:8;background:linear-gradient(180deg,var(--primary-mid),var(--primary));color:#fff}
+#entryTable th.sticky-col-2,#entryTable td.sticky-col-2{left:42px}
+#entryTable th.sticky-col-3,#entryTable td.sticky-col-3{left:138px}
+#entryTable tr.ps-row td.sticky-col,
+#entryTable tr.ps-row td.sticky-col-2,
+#entryTable tr.ps-row td.sticky-col-3{background:#f6f0ff}
+#entryTable tr.total-row td.sticky-col,
+#entryTable tr.total-row td.sticky-col-2,
+#entryTable tr.total-row td.sticky-col-3{background:#e3f0ff}
+#entryTable tr:nth-child(even) td.sticky-col,
+#entryTable tr:nth-child(even) td.sticky-col-2,
+#entryTable tr:nth-child(even) td.sticky-col-3{background:#f7f9fc}
+#entryTable tr:hover td.sticky-col,
+#entryTable tr:hover td.sticky-col-2,
+#entryTable tr:hover td.sticky-col-3{background:#eef4fb}
+#entryTable td.sticky-col{min-width:42px;width:42px;text-align:center;font-weight:600}
+#entryTable td.sticky-col-2{min-width:96px;width:96px;font-weight:600}
+#entryTable td.sticky-col-3{min-width:72px;width:72px}
+#entry-focus-bar{
+  display:none;position:sticky;top:0;z-index:9;
+  background:linear-gradient(90deg,#1f2c6b,#2b6cb0);color:#fff;
+  padding:8px 14px;border-radius:8px;margin-bottom:8px;font-size:.9rem;font-weight:600;
+  box-shadow:0 2px 10px rgba(20,30,70,.2);
+}
+#entry-focus-bar.show{display:block}
+#entry-focus-bar span{opacity:.85;font-weight:500;margin:0 6px}
+
+
+/* Row focus: isolate one date line */
+#entryTable tr.day-row.row-focused td {
+  background: #fef3c7 !important;
+  outline: 2px solid #d97706;
+  outline-offset: -2px;
+}
+#entryTable tr.day-row.row-focused td.sticky-col,
+#entryTable tr.day-row.row-focused td.sticky-col-2,
+#entryTable tr.day-row.row-focused td.sticky-col-3 {
+  background: #fde68a !important;
+}
+#entryTable.dim-others tr.day-row:not(.row-focused) {
+  opacity: 0.18;
+  filter: grayscale(0.6);
+  pointer-events: none;
+}
+#entryTable.dim-others tr.day-row:not(.row-focused) input {
+  pointer-events: none;
+}
+#entryTable td.sl-click {
+  cursor: pointer;
+  user-select: none;
+  color: #1f2c6b;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+#entryTable td.sl-click:hover {
+  background: #dbeafe !important;
+  color: #1d4ed8;
+}
+#entryTable tr.day-row.row-focused td.sl-click {
+  background: #f59e0b !important;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+
+/* Remove number input spinners / dropdown arrows on entry cells */
+input.cell-input[type=number]::-webkit-outer-spin-button,
+input.cell-input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input.cell-input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input.cell-input {
+  background: #fff;
+}
+
+
+/* Day row lock */
+#entryTable td.lock-cell {
+  width: 28px;
+  min-width: 28px;
+  padding: 2px 4px;
+  cursor: pointer;
+  position: sticky;
+  left: 42px;
+  z-index: 4;
+  background: #fff;
+  box-shadow: 2px 0 4px rgba(0,0,0,.06);
+}
+#entryTable thead th.lock-cell {
+  position: sticky;
+  left: 42px;
+  z-index: 8;
+  background: linear-gradient(180deg,var(--primary-mid),var(--primary));
+  color: #fff;
+}
+#entryTable td.sticky-col-2 { left: 70px !important; }
+#entryTable th.sticky-col-2 { left: 70px !important; }
+#entryTable td.sticky-col-3 { left: 166px !important; }
+#entryTable th.sticky-col-3 { left: 166px !important; }
+#entryTable tr.ps-row td.lock-cell,
+#entryTable tr.total-row td.lock-cell { background: inherit; }
+#entryTable tr:nth-child(even) td.lock-cell { background: #f7f9fc; }
+#entryTable tr:hover td.lock-cell { background: #eef4fb; }
+#entryTable tr.day-row.row-focused td.lock-cell { background: #fde68a !important; }
+#entryTable tr.day-row.row-locked td {
+  background: #f0fdf4 !important;
+}
+#entryTable tr.day-row.row-locked td.sticky-col,
+#entryTable tr.day-row.row-locked td.sticky-col-2,
+#entryTable tr.day-row.row-locked td.sticky-col-3,
+#entryTable tr.day-row.row-locked td.lock-cell {
+  background: #dcfce7 !important;
+}
+#entryTable tr.day-row.row-locked input.cell-input {
+  pointer-events: none;
+  background: #e8f5e9 !important;
+  color: #555;
+  border-color: #c8e6c9;
+}
+#entryTable .lock-tick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #94a3b8;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1;
+  color: transparent;
+  background: #fff;
+  transition: all .15s;
+}
+#entryTable .lock-tick:hover { border-color: #2f855a; }
+#entryTable tr.day-row.row-locked .lock-tick,
+#entryTable tr.ps-row.row-locked .lock-tick,
+#entryTable tr[data-special].row-locked .lock-tick {
+  background: #2f855a;
+  border-color: #2f855a;
+  color: #fff !important;
+  font-weight: 800;
+}
+#entryTable tr.ps-row.row-locked td,
+#entryTable tr[data-special].row-locked td {
+  background: #f0fdf4 !important;
+}
+#entryTable tr.ps-row.row-locked td.sticky-col,
+#entryTable tr.ps-row.row-locked td.sticky-col-2,
+#entryTable tr.ps-row.row-locked td.sticky-col-3,
+#entryTable tr.ps-row.row-locked td.lock-cell,
+#entryTable tr[data-special].row-locked td.sticky-col,
+#entryTable tr[data-special].row-locked td.sticky-col-2,
+#entryTable tr[data-special].row-locked td.sticky-col-3,
+#entryTable tr[data-special].row-locked td.lock-cell {
+  background: #dcfce7 !important;
+}
+#entryTable tr.ps-row.row-locked input.cell-input,
+#entryTable tr[data-special].row-locked input.cell-input {
+  pointer-events: none;
+  background: #e8f5e9 !important;
+  color: #555;
+  border-color: #c8e6c9;
+}
+
 </style>
 </head>
 <body>
@@ -943,7 +1123,7 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
       </button>
       <div>
         <h1>Sticker Stock Management</h1>
-        <div class="sub">CW &amp; HW · EXTRA USE = Closing − Production − Manual · Manual values saved per month</div>
+        
       </div>
       <div class="period">
         <div><label>Year</label>
@@ -976,7 +1156,8 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
       <button class="btn btn-secondary" onclick="prevMonth()">Prev</button>
       <button class="btn btn-secondary" onclick="nextMonth()">Next</button>
     </div>
-    <div class="table-wrap"><table id="entryTable"><thead></thead><tbody></tbody></table></div>
+    <div id="entry-focus-bar" class="no-print">Date: <b id="focus-date">—</b><span>·</span>Brand: <b id="focus-brand">—</b></div>
+    <div class="table-wrap" id="entryTableWrap"><table id="entryTable"><thead></thead><tbody></tbody></table></div>
   </div>
 </div>
 
@@ -1023,7 +1204,7 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
         <tbody></tbody>
       </table>
     </div>
-    <p class="footer-note">Color City Ltd⚡ This file has been auto-updated. </p>
+    <p class="footer-note">ম্যানুয়াল ফিল্ড (Printed St, Soft Winding Use) প্রতি মাসে আলাদা সেভ হয় — আগের মাস দেখলে সেই মাসের মানই দেখাবে।</p>
   </div>
 </div>
 
@@ -1074,8 +1255,8 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
         <h1><span class="eco">eco</span> Brand Catalog</h1>
       </div>
     </div>
-    <div class="sub">ব্র্যান্ডের নাম ও ছবি যোগ করুন · সংগ্রহ থেকে PDF বা Excel ডাউনলোড করুন · র‍্যাঙ্ক অনুযায়ী সাজান</div>
-    <div class="sub-note">ডেটা ক্লাউডে (Supabase, লাইভ) সংরক্ষিত থাকে — যেকোনো ব্রাউজার থেকে লগইন করলে একই ডেটা দেখা যাবে</div>
+    
+    
   </header>
 
   <div class="cat-tabs">
@@ -1111,7 +1292,7 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
       <div class="count" id="item-count">০টি ব্র্যান্ড আছে</div>
       <div class="dl-buttons">
         <button class="dl-btn pdf" id="dl-pdf">⬇ PDF</button>
-        <button class="dl-btn xlsx" id="dl-xlsx">⬇ Excel</button>
+        
       </div>
     </div>
     <div class="grid" id="grid"></div>
@@ -1715,14 +1896,121 @@ function printSummary() {
   }, 150);
 }
 
+
+
+function dayLockKey(y, m, d) { return y + "|" + m + "|" + d; }
+function specialLockKey(y, m, kind) { return y + "|" + m + "|" + kind; }
+/* Default: LOCKED. Explicit false = unlocked. */
+function isDayLocked(y, m, d) {
+  try {
+    var locks = JSON.parse(localStorage.getItem("ssm_day_locks") || "{}");
+    var v = locks[dayLockKey(y, m, d)];
+    if (v === undefined) return true;
+    return !!v;
+  } catch(e) { return true; }
+}
+function isSpecialLocked(y, m, kind) {
+  try {
+    var locks = JSON.parse(localStorage.getItem("ssm_day_locks") || "{}");
+    var v = locks[specialLockKey(y, m, kind)];
+    if (v === undefined) return true;
+    return !!v;
+  } catch(e) { return true; }
+}
+function setDayLocked(y, m, d, locked) {
+  try {
+    var locks = JSON.parse(localStorage.getItem("ssm_day_locks") || "{}");
+    locks[dayLockKey(y, m, d)] = !!locked;
+    localStorage.setItem("ssm_day_locks", JSON.stringify(locks));
+  } catch(e) {}
+}
+function setSpecialLocked(y, m, kind, locked) {
+  try {
+    var locks = JSON.parse(localStorage.getItem("ssm_day_locks") || "{}");
+    locks[specialLockKey(y, m, kind)] = !!locked;
+    localStorage.setItem("ssm_day_locks", JSON.stringify(locks));
+  } catch(e) {}
+}
+function toggleDayLock(day) {
+  var y = currentYear(), m = currentMonth();
+  var locked = !isDayLocked(y, m, day);
+  setDayLocked(y, m, day, locked);
+  var row = document.querySelector('#entryTable tr.day-row[data-day="'+day+'"]');
+  if (row) {
+    if (locked) row.classList.add("row-locked");
+    else row.classList.remove("row-locked");
+    var tick = row.querySelector(".lock-tick");
+    if (tick) tick.textContent = locked ? "✓" : "";
+    row.querySelectorAll("input.cell-input").forEach(function(inp) {
+      inp.readOnly = locked;
+      if (locked) inp.setAttribute("readonly", "readonly");
+      else inp.removeAttribute("readonly");
+    });
+  }
+  showMsg(locked ? ("Day " + (day+1) + " লক") : ("Day " + (day+1) + " আনলক — এখন ডেটা দিন"));
+}
+function toggleSpecialLock(kind) {
+  var y = currentYear(), m = currentMonth();
+  var locked = !isSpecialLocked(y, m, kind);
+  setSpecialLocked(y, m, kind, locked);
+  var row = document.querySelector('#entryTable tr[data-special="'+kind+'"]');
+  if (row) {
+    if (locked) row.classList.add("row-locked");
+    else row.classList.remove("row-locked");
+    var tick = row.querySelector(".lock-tick");
+    if (tick) tick.textContent = locked ? "✓" : "";
+    row.querySelectorAll("input.cell-input").forEach(function(inp) {
+      inp.readOnly = locked;
+      if (locked) inp.setAttribute("readonly", "readonly");
+      else inp.removeAttribute("readonly");
+    });
+  }
+  var label = kind === "pstock" ? "P-STOCK" : "N-STOCK";
+  showMsg(locked ? (label + " লক") : (label + " আনলক — এখন ডেটা দিন"));
+}
+
+var focusedDay = null;
+function toggleDayFocus(day) {
+  var table = document.getElementById("entryTable");
+  if (!table) return;
+  var rows = table.querySelectorAll("tr.day-row");
+  if (focusedDay === day) {
+    focusedDay = null;
+    table.classList.remove("dim-others");
+    rows.forEach(function(r) { r.classList.remove("row-focused"); });
+    var bar = document.getElementById("entry-focus-bar");
+    if (bar) bar.classList.remove("show");
+    return;
+  }
+  focusedDay = day;
+  table.classList.add("dim-others");
+  rows.forEach(function(r) {
+    var d = parseInt(r.getAttribute("data-day"), 10);
+    if (d === day) r.classList.add("row-focused");
+    else r.classList.remove("row-focused");
+  });
+  var focused = table.querySelector("tr.day-row.row-focused");
+  if (focused) {
+    var dateCell = focused.querySelector("td.sticky-col-2");
+    var bar = document.getElementById("entry-focus-bar");
+    if (bar && dateCell) {
+      document.getElementById("focus-date").textContent = dateCell.textContent.trim();
+      document.getElementById("focus-brand").textContent = "শুধু এই তারিখ";
+      bar.classList.add("show");
+    }
+    focused.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+}
+
 function renderEntry() {
+  focusedDay = null;
   var y = currentYear(), m = currentMonth();
   ensureMonth(y,m);
   var list = activeBrands();
   document.getElementById("entryTitle").textContent = "Daily Stock Entry — "+MONTHS[m]+" "+y;
   var thead = document.querySelector("#entryTable thead");
   var tbody = document.querySelector("#entryTable tbody");
-  var head = "<tr><th>SL</th><th>Date</th><th>Type</th>";
+  var head = '<tr><th class="sticky-col">SL</th><th class="lock-cell" title="লক">🔒</th><th class="sticky-col sticky-col-2">Date</th><th class="sticky-col sticky-col-3">Type</th>';
   list.forEach(function(b){
     var cls = b.type==="HW"?"brand-hw":(b.type==="Manual"?"brand-manual":"brand-cw");
     head += '<th class="'+cls+'">'+b.name+"</th>";
@@ -1730,54 +2018,77 @@ function renderEntry() {
   head += '<th>Date Wise Total</th><th class="extra">Rebon Small</th><th class="extra">Rebon Big</th><th class="extra">SR NO.</th><th class="extra">Received By</th></tr>';
   thead.innerHTML = head;
   var body = "";
-  body += '<tr class="ps-row"><td></td><td><b>P-STOCK</b></td><td>Previous</td>';
+  body += '<tr class="ps-row'+(isSpecialLocked(y,m,"pstock")?" row-locked":"")+'" data-special="pstock"><td class="sticky-col"></td><td class="lock-cell" title="P-STOCK লক/আনলক" onclick="toggleSpecialLock(\'pstock\')"><span class="lock-tick">'+(isSpecialLocked(y,m,"pstock")?"✓":"")+'</span></td><td class="sticky-col sticky-col-2"><b>P-STOCK</b></td><td class="sticky-col sticky-col-3">Previous</td>';
   list.forEach(function(b){
-    body += '<td><input class="cell-input num" type="number" data-kind="pstock" data-brand="'+b.name.replace(/"/g,"&quot;")+'" value="'+(data[y][m].pstock[b.name]||0)+'"></td>';
+    body += '<td><input class="cell-input num" autocomplete="off" type="number" data-kind="pstock" data-brand="'+b.name.replace(/"/g,"&quot;")+'" value="'+(data[y][m].pstock[b.name]||0)+'"></td>';
   });
   var psTotal = list.reduce(function(s,b){return s+Number(data[y][m].pstock[b.name]||0);},0);
   body += '<td class="num"><b>'+fmt(psTotal)+"</b></td><td></td><td></td><td></td><td></td></tr>";
   for (var d=0; d<data[y][m].daily.length; d++) {
     var dateStr = y+"-"+String(m+1).padStart(2,"0")+"-"+String(d+1).padStart(2,"0");
-    body += "<tr><td>"+(d+1)+"</td><td>"+dateStr+"</td><td>উত্তলন</td>";
+    body += '<tr class="day-row'+(isDayLocked(y,m,d)?' row-locked':'')+'" data-day="'+d+'"><td class="sticky-col sl-click" title="এই তারিখ হাইলাইট / আনহাইলাইট" onclick="toggleDayFocus('+d+')">'+(d+1)+'</td><td class="lock-cell" title="লক / আনলক" onclick="toggleDayLock('+d+')"><span class="lock-tick">'+(isDayLocked(y,m,d)?'✓':'')+'</span></td><td class="sticky-col sticky-col-2">'+dateStr+'</td><td class="sticky-col sticky-col-3">উত্তলন</td>';
     var dayTotal=0;
     list.forEach(function(b){
       var val = data[y][m].daily[d][b.name];
       var num = parseFloat(val); if(!isNaN(num)) dayTotal+=num;
       var display = (val===""||val===undefined||val===null)?"":val;
-      body += '<td><input class="cell-input num" type="number" data-kind="daily" data-day="'+d+'" data-brand="'+b.name.replace(/"/g,"&quot;")+'" value="'+display+'"></td>';
+      body += '<td><input class="cell-input num" autocomplete="off" type="number" data-kind="daily" data-day="'+d+'" data-brand="'+b.name.replace(/"/g,"&quot;")+'" value="'+display+'"></td>';
     });
     body += '<td class="num">'+(dayTotal?fmt(dayTotal):"")+"</td>";
     var ex = (data[y][m].extras&&data[y][m].extras[d])||{rebonSmall:"",rebonBig:"",srNo:"",receivedBy:""};
-    body += '<td><input class="cell-input extra num" type="number" data-kind="extra" data-day="'+d+'" data-field="rebonSmall" value="'+(ex.rebonSmall||"")+'"></td>';
-    body += '<td><input class="cell-input extra num" type="number" data-kind="extra" data-day="'+d+'" data-field="rebonBig" value="'+(ex.rebonBig||"")+'"></td>';
-    body += '<td><input class="cell-input extra text" type="text" data-kind="extra" data-day="'+d+'" data-field="srNo" value="'+(ex.srNo||"")+'"></td>';
-    body += '<td><input class="cell-input extra text" type="text" data-kind="extra" data-day="'+d+'" data-field="receivedBy" value="'+(ex.receivedBy||"")+'"></td>';
+    body += '<td><input class="cell-input extra num" autocomplete="off" type="number" data-kind="extra" data-day="'+d+'" data-field="rebonSmall" value="'+(ex.rebonSmall||"")+'"></td>';
+    body += '<td><input class="cell-input extra num" autocomplete="off" type="number" data-kind="extra" data-day="'+d+'" data-field="rebonBig" value="'+(ex.rebonBig||"")+'"></td>';
+    body += '<td><input class="cell-input extra text" autocomplete="off" type="text" data-kind="extra" data-day="'+d+'" data-field="srNo" value="'+(ex.srNo||"")+'"></td>';
+    body += '<td><input class="cell-input extra text" autocomplete="off" type="text" data-kind="extra" data-day="'+d+'" data-field="receivedBy" value="'+(ex.receivedBy||"")+'"></td>';
     body += "</tr>";
   }
-  body += '<tr class="total-row"><td></td><td><b>GRAND TOTAL</b></td><td>GT = PS + Σ</td>';
+  body += '<tr class="total-row"><td class="sticky-col"></td><td class="lock-cell"></td><td class="sticky-col sticky-col-2"><b>GRAND TOTAL</b></td><td class="sticky-col sticky-col-3">GT = PS + Σ</td>';
   var gtSum=0;
   list.forEach(function(b){ var gt=calcGT(y,m,b.name); gtSum+=gt; body+='<td class="num">'+fmt(gt)+"</td>"; });
   body += '<td class="num"><b>'+fmt(gtSum)+"</b></td><td></td><td></td><td></td><td></td></tr>";
-  body += '<tr class="ps-row"><td></td><td><b>N-STOCK</b></td><td>WIP (manual)</td>';
+  body += '<tr class="ps-row'+(isSpecialLocked(y,m,"nstock")?" row-locked":"")+'" data-special="nstock"><td class="sticky-col"></td><td class="lock-cell" title="N-STOCK লক/আনলক" onclick="toggleSpecialLock(\'nstock\')"><span class="lock-tick">'+(isSpecialLocked(y,m,"nstock")?"✓":"")+'</span></td><td class="sticky-col sticky-col-2"><b>N-STOCK</b></td><td class="sticky-col sticky-col-3">WIP (manual)</td>';
   list.forEach(function(b){
-    body += '<td><input class="cell-input num" type="number" data-kind="nstock" data-brand="'+b.name.replace(/"/g,"&quot;")+'" value="'+(data[y][m].nstock[b.name]||0)+'"></td>';
+    body += '<td><input class="cell-input num" autocomplete="off" type="number" data-kind="nstock" data-brand="'+b.name.replace(/"/g,"&quot;")+'" value="'+(data[y][m].nstock[b.name]||0)+'"></td>';
   });
   var nsTotal = list.reduce(function(s,b){return s+Number(data[y][m].nstock[b.name]||0);},0);
   body += '<td class="num"><b>'+fmt(nsTotal)+"</b></td><td></td><td></td><td></td><td></td></tr>";
-  body += '<tr class="total-row"><td></td><td><b>USE / CLOSING</b></td><td>GT − N-STOCK</td>';
+  body += '<tr class="total-row"><td class="sticky-col"></td><td class="lock-cell"></td><td class="sticky-col sticky-col-2"><b>USE / CLOSING</b></td><td class="sticky-col sticky-col-3">GT − N-STOCK</td>';
   var clSum=0;
   list.forEach(function(b){ var cl=calcClosing(y,m,b.name); clSum+=cl; body+='<td class="num">'+fmt(cl)+"</td>"; });
   body += '<td class="num"><b>'+fmt(clSum)+"</b></td><td></td><td></td><td></td><td></td></tr>";
   tbody.innerHTML = body;
+
+
+  tbody.querySelectorAll("tr.day-row.row-locked input.cell-input, tr[data-special].row-locked input.cell-input").forEach(function(inp) {
+    inp.readOnly = true;
+    inp.setAttribute("readonly", "readonly");
+  });
+
+  tbody.onfocusin = function(e) {
+    var t = e.target;
+    if (!t.classList.contains("cell-input")) return;
+    var bar = document.getElementById("entry-focus-bar");
+    var tr = t.closest("tr");
+    var dateCell = tr ? tr.querySelector("td.sticky-col-2") : null;
+    var brand = t.getAttribute("data-brand") || t.getAttribute("data-field") || "—";
+    var dateTxt = dateCell ? dateCell.textContent.trim() : "—";
+    if (t.getAttribute("data-kind") === "pstock") dateTxt = "P-STOCK";
+    if (t.getAttribute("data-kind") === "nstock") dateTxt = "N-STOCK";
+    document.getElementById("focus-date").textContent = dateTxt;
+    document.getElementById("focus-brand").textContent = brand;
+    if (bar) bar.classList.add("show");
+  };
+
   tbody.onchange = function(e){
     var t=e.target; if(!t.classList.contains("cell-input")) return;
     var kind=t.getAttribute("data-kind"), brand=t.getAttribute("data-brand");
     var day=t.getAttribute("data-day"), field=t.getAttribute("data-field");
     var y2=currentYear(), m2=currentMonth();
-    if(kind==="pstock"){ data[y2][m2].pstock[brand]=t.value===""?0:t.value; saveData(); renderEntry(); }
-    else if(kind==="nstock"){ data[y2][m2].nstock[brand]=t.value===""?0:t.value; saveData(); renderEntry(); }
-    else if(kind==="daily"){ data[y2][m2].daily[parseInt(day,10)][brand]=t.value; saveData(); renderEntry(); }
+    if(kind==="pstock"){ if(isSpecialLocked(y2,m2,"pstock")){ showMsg("P-STOCK লক আছে — আগে আনলক করুন", false); renderEntry(); return; } data[y2][m2].pstock[brand]=t.value===""?0:t.value; saveData(); renderEntry(); }
+    else if(kind==="nstock"){ if(isSpecialLocked(y2,m2,"nstock")){ showMsg("N-STOCK লক আছে — আগে আনলক করুন", false); renderEntry(); return; } data[y2][m2].nstock[brand]=t.value===""?0:t.value; saveData(); renderEntry(); }
+    else if(kind==="daily"){ if(isDayLocked(y2,m2,parseInt(day,10))){ showMsg("এই তারিখ লক আছে — আগে আনলক করুন", false); renderEntry(); return; } data[y2][m2].daily[parseInt(day,10)][brand]=t.value; saveData(); renderEntry(); }
     else if(kind==="extra"){
+      if(isDayLocked(y2,m2,parseInt(day,10))){ showMsg("এই তারিখ লক আছে — আগে আনলক করুন", false); renderEntry(); return; }
       if(!data[y2][m2].extras) data[y2][m2].extras=[];
       if(!data[y2][m2].extras[parseInt(day,10)]) data[y2][m2].extras[parseInt(day,10)]={};
       data[y2][m2].extras[parseInt(day,10)][field]=t.value; saveData();
@@ -2431,7 +2742,7 @@ function renderGrid() {
   count.textContent = items.length + 'টি ব্র্যান্ড আছে';
 
   document.getElementById('dl-pdf').disabled = items.length === 0;
-  document.getElementById('dl-xlsx').disabled = items.length === 0;
+  
 
   if (items.length === 0) {
     grid.innerHTML = '';
@@ -2640,19 +2951,6 @@ document.getElementById('dl-pdf').addEventListener('click', () => {
   doc.save('eco_brand_catalog.pdf');
 });
 
-/* ——— Excel Export ——— */
-document.getElementById('dl-xlsx').addEventListener('click', () => {
-  const rows = items.map((it, i) => ({
-    'ক্রম': i + 1,
-    'ব্র্যান্ডের নাম': it.name,
-    'বিবরণ': it.desc || ''
-  }));
-  const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{ wch: 6 }, { wch: 28 }, { wch: 50 }];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Brands');
-  XLSX.writeFile(wb, 'eco_brand_catalog.xlsx');
-});
 
 
 </script>
