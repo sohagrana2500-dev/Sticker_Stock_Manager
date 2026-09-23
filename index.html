@@ -919,6 +919,10 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
         <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></span>
         <span class="nav-label">eco Brand Catalog</span>
       </button>
+      <button class="tab" data-tab="settings" onclick="showTab('settings')" title="Settings">
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span>
+        <span class="nav-label">সেটিংস</span>
+      </button>
     </nav>
     <div class="sidebar-foot">
       <button class="collapse-btn" onclick="toggleSidebar()" id="collapseBtn">
@@ -1070,8 +1074,8 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
         <h1><span class="eco">eco</span> Brand Catalog</h1>
       </div>
     </div>
-    <div class="sub">ব্র্যান্ডের নাম ও ছবি যোগ করুন · সংগ্রহ থেকে PDF ডাউনলোড করুন </div>
-    
+    <div class="sub">ব্র্যান্ডের নাম ও ছবি যোগ করুন · সংগ্রহ থেকে PDF বা Excel ডাউনলোড করুন · র‍্যাঙ্ক অনুযায়ী সাজান</div>
+    <div class="sub-note">ডেটা ক্লাউডে (Supabase, লাইভ) সংরক্ষিত থাকে — যেকোনো ব্রাউজার থেকে লগইন করলে একই ডেটা দেখা যাবে</div>
   </header>
 
   <div class="cat-tabs">
@@ -1169,6 +1173,48 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
 </div>
 </div>
 
+<div id="tab-settings" class="panel">
+  <div class="card">
+    <h2>🎨 সফটওয়্যারের নাম ও লোগো</h2>
+    <div class="row">
+      <div style="flex:1;min-width:220px">
+        <label>সফটওয়্যারের নাম</label>
+        <input type="text" id="setAppName" placeholder="Sticker Stock Management" style="width:100%">
+      </div>
+    </div>
+    <div class="row" style="align-items:center">
+      <div>
+        <label>লোগো</label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div id="setLogoPreview" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#f7ce7a,#e0a63a 60%,#c9862a);display:flex;align-items:center;justify-content:center;color:#3a2705;font-weight:800;overflow:hidden;flex-shrink:0;font-family:'Poppins',sans-serif">SS</div>
+          <input type="file" id="setLogoFile" accept="image/*" onchange="onLogoFileChange(event)">
+          <button class="btn btn-secondary" type="button" onclick="clearLogo()">লোগো সরান</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:10px">সংরক্ষণ করুন</button>
+    <div id="settingsMsg" class="msg" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h2>👤 ইউজার ব্যবস্থাপনা</h2>
+    <div class="table-wrap" style="max-height:none;margin-bottom:16px">
+      <table style="width:100%">
+        <thead><tr><th>ইউজারনেম</th><th>পাসওয়ার্ড</th><th>একশন</th></tr></thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+    <h3 style="font-size:.95rem;margin-bottom:8px;color:var(--primary)">নতুন ইউজার যোগ / পাসওয়ার্ড পরিবর্তন</h3>
+    <div class="row">
+      <div><label>ইউজারনেম</label><input type="text" id="newUserName" placeholder="যেমন: sohel"></div>
+      <div><label>পাসওয়ার্ড</label><input type="password" id="newUserPass" placeholder="কমপক্ষে ৪ অক্ষর"></div>
+      <button class="btn btn-primary" onclick="createOrUpdateUser()">যোগ / আপডেট করুন</button>
+    </div>
+    <div class="footer-note">নোট: বিদ্যমান ইউজারনেম দিয়ে যোগ করলে সেই ইউজারের পাসওয়ার্ড পরিবর্তন হয়ে যাবে।</div>
+    <div id="userMsg" class="msg" style="margin-top:8px"></div>
+  </div>
+</div>
+
     </div><!-- /.content-area -->
   </div><!-- /.main-wrap -->
 </div><!-- /#appShell -->
@@ -1242,6 +1288,7 @@ try {
 } catch(e) { console.warn(e); }
 
 window.SSCM_TOKEN = null; // in-memory only; never persisted to localStorage
+window.SSCM_USER = null;
 
 function setCloudStatus(text, bg, color) {
   var el = document.getElementById("cloudStatus");
@@ -1317,6 +1364,171 @@ async function cloudLoadState() {
   }
 }
 
+/* ===== Settings: branding + user management ===== */
+var pendingLogoDataUrl = undefined; // undefined = unchanged, null = cleared, string = new image
+
+function applyBranding(settings) {
+  if (!settings) return;
+  var name = settings.app_name || "Sticker Stock Management";
+  document.title = name;
+  var brandTxt = document.querySelector(".sidebar-brand .txt b");
+  if (brandTxt) brandTxt.textContent = name;
+  var topbarH1 = document.querySelector(".topbar h1");
+  if (topbarH1) topbarH1.textContent = name;
+  var marks = document.querySelectorAll(".sidebar-brand .mark, .login-mark");
+  marks.forEach(function(el) {
+    if (settings.logo_image) {
+      el.innerHTML = '<img src="' + settings.logo_image + '" alt="logo" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
+    } else {
+      el.textContent = "SS";
+    }
+  });
+}
+
+async function loadPublicBranding() {
+  if (!sbClient) return;
+  try {
+    var res = await sbClient.rpc("ss_get_settings");
+    if (!res.error && res.data) applyBranding(res.data);
+  } catch(e) { console.warn(e); }
+}
+
+async function renderSettings() {
+  if (!sbClient || !window.SSCM_TOKEN) return;
+  try {
+    var res = await sbClient.rpc("ss_get_settings");
+    if (!res.error && res.data) {
+      document.getElementById("setAppName").value = res.data.app_name || "";
+      var preview = document.getElementById("setLogoPreview");
+      if (res.data.logo_image) {
+        preview.innerHTML = '<img src="' + res.data.logo_image + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
+      } else {
+        preview.textContent = "SS";
+      }
+    }
+  } catch(e) { console.warn(e); }
+  pendingLogoDataUrl = undefined;
+
+  try {
+    var ures = await sbClient.rpc("ss_users_list", { p_token: window.SSCM_TOKEN });
+    var tbody = document.getElementById("usersTableBody");
+    tbody.innerHTML = "";
+    if (!ures.error && ures.data) {
+      ures.data.forEach(function(u) {
+        var tr = document.createElement("tr");
+        var td1 = document.createElement("td");
+        td1.style.textAlign = "left";
+        td1.textContent = u.username;
+        var td1b = document.createElement("td");
+        td1b.style.textAlign = "left";
+        td1b.style.fontFamily = "monospace";
+        td1b.textContent = u.password ? u.password : "— (পুরনো, রিসেট করুন)";
+        var td2 = document.createElement("td");
+        var delBtn = document.createElement("button");
+        delBtn.className = "btn btn-danger";
+        delBtn.style.padding = "5px 12px";
+        delBtn.style.fontSize = ".75rem";
+        delBtn.textContent = "মুছুন";
+        delBtn.onclick = function(){ deleteUser(u.username); };
+        td2.appendChild(delBtn);
+        tr.appendChild(td1); tr.appendChild(td1b); tr.appendChild(td2);
+        tbody.appendChild(tr);
+      });
+    }
+  } catch(e) { console.warn(e); }
+}
+
+function onLogoFileChange(e) {
+  var file = e.target.files && e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    pendingLogoDataUrl = ev.target.result;
+    document.getElementById("setLogoPreview").innerHTML =
+      '<img src="' + pendingLogoDataUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
+  };
+  reader.readAsDataURL(file);
+}
+function clearLogo() {
+  pendingLogoDataUrl = null;
+  document.getElementById("setLogoPreview").textContent = "SS";
+  document.getElementById("setLogoFile").value = "";
+}
+
+function showSettingsMsg(text, ok) {
+  var el = document.getElementById("settingsMsg");
+  el.textContent = text;
+  el.className = "msg " + (ok ? "ok" : "err");
+}
+function showUserMsg(text, ok) {
+  var el = document.getElementById("userMsg");
+  el.textContent = text;
+  el.className = "msg " + (ok ? "ok" : "err");
+}
+
+async function saveSettings() {
+  if (!sbClient || !window.SSCM_TOKEN) return;
+  var name = document.getElementById("setAppName").value.trim();
+  var logoToSend; // undefined => keep current (send existing preview src), null => clear, string => new
+  if (pendingLogoDataUrl === undefined) {
+    var img = document.querySelector("#setLogoPreview img");
+    logoToSend = img ? img.getAttribute("src") : null;
+  } else {
+    logoToSend = pendingLogoDataUrl;
+  }
+  try {
+    var res = await sbClient.rpc("ss_set_settings", { p_token: window.SSCM_TOKEN, p_app_name: name, p_logo_image: logoToSend });
+    if (res.error) {
+      showSettingsMsg("✕ সংরক্ষণ ব্যর্থ: " + res.error.message, false);
+    } else {
+      showSettingsMsg("✓ সংরক্ষিত হয়েছে।", true);
+      applyBranding({ app_name: name, logo_image: logoToSend });
+      pendingLogoDataUrl = undefined;
+    }
+  } catch(e) {
+    showSettingsMsg("✕ সংরক্ষণ ব্যর্থ হয়েছে।", false);
+  }
+}
+
+async function createOrUpdateUser() {
+  if (!sbClient || !window.SSCM_TOKEN) return;
+  var uname = document.getElementById("newUserName").value.trim();
+  var pass = document.getElementById("newUserPass").value;
+  if (!uname || pass.length < 4) {
+    showUserMsg("✕ ইউজারনেম দিন এবং পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।", false);
+    return;
+  }
+  try {
+    var res = await sbClient.rpc("ss_user_create", { p_token: window.SSCM_TOKEN, p_username: uname, p_password: pass });
+    if (res.error) {
+      showUserMsg("✕ ব্যর্থ: " + res.error.message, false);
+    } else {
+      showUserMsg("✓ ইউজার সংরক্ষিত হয়েছে।", true);
+      document.getElementById("newUserName").value = "";
+      document.getElementById("newUserPass").value = "";
+      renderSettings();
+    }
+  } catch(e) {
+    showUserMsg("✕ ব্যর্থ হয়েছে।", false);
+  }
+}
+
+async function deleteUser(username) {
+  if (!sbClient || !window.SSCM_TOKEN) return;
+  if (!confirm("ইউজার '" + username + "' মুছে ফেলতে চান?")) return;
+  try {
+    var res = await sbClient.rpc("ss_user_delete", { p_token: window.SSCM_TOKEN, p_username: username });
+    if (res.error) {
+      showUserMsg("✕ মুছা যায়নি: " + res.error.message, false);
+    } else {
+      showUserMsg("✓ মুছে ফেলা হয়েছে।", true);
+      renderSettings();
+    }
+  } catch(e) {
+    showUserMsg("✕ মুছা যায়নি।", false);
+  }
+}
+
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS_IN_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 
@@ -1376,6 +1588,7 @@ function periodKey(){ return currentYear() + "|" + MONTHS[currentMonth()]; }
 function onPeriodChange(){ renderEntry(); renderSummary(); saveData(); }
 
 function showTab(id) {
+  if (id === "settings" && window.SSCM_USER !== "admin") { id = "entry"; }
   document.querySelectorAll(".panel").forEach(function(p){ p.classList.remove("active"); });
   document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); });
   document.getElementById("tab-"+id).classList.add("active");
@@ -1385,6 +1598,7 @@ function showTab(id) {
   if (id==="summary") renderSummary();
   if (id==="brands") renderBrands();
   if (id==="prod") renderProdInfo();
+  if (id==="settings") renderSettings();
 }
 
 
@@ -1861,6 +2075,7 @@ async function startApp(){
     var opt=document.createElement("option"); opt.value=i; opt.textContent=name; sel.appendChild(opt);
   });
   sel.value="1";
+  loadPublicBranding();
   var gotCloud = await cloudLoadState();
   if (!gotCloud && sbClient) {
     // First run on this project / row not created yet: seed the cloud with current (local) state.
@@ -1881,10 +2096,13 @@ function showLoginScreen(msg, ok){
 function showApp(){
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("appShell").style.display = "flex";
+  var settingsBtn = document.querySelector('.tab[data-tab="settings"]');
+  if (settingsBtn) settingsBtn.style.display = (window.SSCM_USER === "admin") ? "" : "none";
 }
 async function doLogout(){
   try { if (sbClient && window.SSCM_TOKEN) await sbClient.rpc("ss_logout", { p_token: window.SSCM_TOKEN }); } catch(e){}
   window.SSCM_TOKEN = null;
+  window.SSCM_USER = null;
   location.reload();
 }
 async function checkAuthAndStart(){
@@ -1894,6 +2112,7 @@ async function checkAuthAndStart(){
     return;
   }
   showLoginScreen();
+  loadPublicBranding();
 }
 document.getElementById("loginForm").addEventListener("submit", async function(e){
   e.preventDefault();
@@ -1908,7 +2127,8 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
       console.warn("Login error:", res.error);
       showLoginScreen("\u2715 \u09ad\u09c1\u09b2 \u0987\u0989\u099c\u09be\u09b0\u09a8\u09c7\u09ae \u0985\u09a5\u09ac\u09be \u09aa\u09be\u09b8\u0993\u09df\u09be\u09b0\u09cd\u09a1\u0964", false);
     } else {
-      window.SSCM_TOKEN = res.data;
+      window.SSCM_TOKEN = res.data.token;
+      window.SSCM_USER = res.data.username;
       showApp();
       startApp();
     }
