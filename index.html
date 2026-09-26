@@ -1128,7 +1128,7 @@ input.cell-input {
       </button>
 <button class="tab" data-tab="settings" onclick="showTab('settings')" title="Settings">
         <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span>
-        <span class="nav-label">সেটিংস</span>
+        <span class="nav-label">Settings</span>
       </button>
     </nav>
     <div class="sidebar-foot">
@@ -1191,7 +1191,7 @@ input.cell-input {
   </div>
   <div class="card">
     <h2>Brand List (<span id="brandCount">0</span>)</h2>
-    <p class="footer-note">⠿ টেনে সিরিয়াল বদলান — Daily Entry / Summary একই ক্রমে · ছবি থাকলে 👁 ভিউ</p>
+    <p class="footer-note">⠿ Swipe to change series — Daily Entry / Summary in the same order · View images (👁)</p>
     <div class="table-wrap">
       <table id="brandTable">
         <thead>
@@ -1393,7 +1393,7 @@ input.cell-input {
   <!-- RANK / SORT TAB -->
   <div class="cat-panel" id="panel-rank">
     <div class="rank-hint">
-      ⠿ হ্যান্ডেল ধরে টেনে নিয়ে ব্র্যান্ডগুলো আপনার পছন্দের ক্রমে সাজান। ক্রম স্বয়ংক্রিয়ভাবে সংরক্ষিত হবে।
+      ⠿ Drag the handles to arrange the brands in your preferred order. The order will be saved automatically.
     </div>
     <div class="rank-list" id="rank-list"></div>
     <div class="empty-state" id="rank-empty" style="display:none;">
@@ -1811,8 +1811,8 @@ async function createOrUpdateUser() {
   if (!sbClient || !window.SSCM_TOKEN) return;
   var uname = document.getElementById("newUserName").value.trim();
   var pass = document.getElementById("newUserPass").value;
-  if (!uname || pass.length < 4) {
-    showUserMsg("✕ ইউজারনেম দিন এবং পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।", false);
+  if (!uname || pass.length < 3) {
+    showUserMsg("✕ ইউজারনেম দিন এবং পাসওয়ার্ড কমপক্ষে 3 অক্ষরের হতে হবে।", false);
     return;
   }
   try {
