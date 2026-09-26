@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -233,7 +234,26 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
     font-size: 11pt;
     width: auto !important;
   }
+  #tab-summary .print-footer {
+    display: flex !important;
+    position: fixed;
+    bottom: 0.12in;
+    left: 0;
+    right: 0.2in;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6pt;
+    font-size: 8pt;
+    color: #555 !important;
+  }
+  #tab-summary .print-footer img {
+    width: 16pt;
+    height: 16pt;
+    object-fit: cover;
+    border-radius: 3pt;
+  }
 }
+.print-footer{display:none}
 
 /* ===== eco Brand Catalog (merged, scoped under #catalogRoot) ===== */
 #catalogRoot{font-family:'Segoe UI','Noto Sans Bengali',system-ui,sans-serif;}
@@ -1134,7 +1154,7 @@ input.cell-input {
       </div>
       <div class="period">
         <div><label>Year</label>
-          <select id="yearSelect" onchange="onPeriodChange()"><option value="2026" selected>2026</option><option value="2027">2027</option></select></div>
+          <select id="yearSelect" onchange="onPeriodChange()"></select></div>
         <div><label>Month</label><select id="monthSelect" onchange="onPeriodChange()"></select></div>
         <div><label>&nbsp;</label><span id="cloudStatus" style="display:inline-block;padding:6px 10px;border-radius:8px;font-size:.75rem;font-weight:700;background:#edf2f7;color:#4a5568">⏳ Connecting…</span></div>
       </div>
@@ -1205,7 +1225,7 @@ input.cell-input {
       </div>
     </div>
     <div id="pdfPreviewBody" style="overflow:auto;padding:16px;background:#e8ecf4;flex:1">
-      <div id="pdfPreviewPage" style="background:#fff;max-width:210mm;margin:0 auto;padding:12mm;box-shadow:0 4px 20px rgba(0,0,0,.12);font-family:Segoe UI,Tahoma,sans-serif">
+      <div id="pdfPreviewPage" style="background:#fff;max-width:210mm;margin:0 auto;padding:6.35mm;box-shadow:0 4px 20px rgba(0,0,0,.12);font-family:Segoe UI,Tahoma,sans-serif">
       </div>
     </div>
   </div>
@@ -1229,6 +1249,10 @@ input.cell-input {
     <h2>STICKER STOCK — MONTHLY SUMMARY REPORT
       <button class="btn btn-primary" onclick="printSummary()" style="float:right;font-size:0.85rem">🖨 Print Summary</button>
     </h2>
+    <div id="summaryPrintFooter" class="print-footer">
+      <img id="summaryPrintLogo" src="" alt="" style="display:none">
+      <span>Software Designer by SOHAG RANA</span>
+    </div>
     <div class="sum-header">
       <div><span class="lbl">YEAR :</span> <span class="val" id="sumYear">2026</span></div>
       <div><span class="lbl">MONTH :</span> <span class="val" id="sumMonth">February</span></div>
@@ -1611,10 +1635,15 @@ async function cloudLoadState() {
 /* ===== Settings: branding + user management ===== */
 var pendingLogoDataUrl = undefined; // undefined = unchanged, null = cleared, string = new image
 
+/* ===== Software designer credit (shown on all printed/PDF outputs) ===== */
+var DESIGNER_NAME = "SOHAG RANA";
+var currentLogoImage = null; // holds the uploaded logo data-URL for use in print/PDF footers
+
 function applyBranding(settings) {
   if (!settings) return;
   var name = settings.app_name || "Sticker Stock Management";
   document.title = name;
+  currentLogoImage = settings.logo_image || null;
   var brandTxt = document.querySelector(".sidebar-brand .txt b");
   if (brandTxt) brandTxt.textContent = name;
   var topbarH1 = document.querySelector(".topbar h1");
@@ -1627,6 +1656,50 @@ function applyBranding(settings) {
       el.textContent = "SS";
     }
   });
+  updatePrintFooterLogo();
+}
+
+function updatePrintFooterLogo() {
+  var logoImg = document.getElementById("summaryPrintLogo");
+  if (logoImg) {
+    if (currentLogoImage) { logoImg.src = currentLogoImage; logoImg.style.display = "inline-block"; }
+    else { logoImg.style.display = "none"; }
+  }
+}
+
+/* Detects PNG/JPEG format string for jsPDF from a data-URL; returns null if unusable */
+function pdfImageFormat(dataUrl) {
+  if (!dataUrl || typeof dataUrl !== "string") return null;
+  var m = /^data:image\/(png|jpe?g);/i.exec(dataUrl);
+  if (!m) return null;
+  return /png/i.test(m[1]) ? "PNG" : "JPEG";
+}
+
+/* Stamps "Software Designer by …" + logo on every page of a jsPDF document, right-aligned */
+function addDesignerFooter(doc) {
+  try {
+    var pageCount = doc.internal.getNumberOfPages();
+    var pageW = doc.internal.pageSize.getWidth();
+    var pageH = doc.internal.pageSize.getHeight();
+    var fmt = pdfImageFormat(currentLogoImage);
+    var rightMargin = 6.35; // 0.25in
+    for (var i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      var y = pageH - 8;
+      doc.setFontSize(8);
+      doc.setFont(undefined, "italic");
+      doc.setTextColor(120);
+      var label = "Software Designer by " + DESIGNER_NAME;
+      var textW = doc.getTextWidth(label);
+      var textX = pageW - rightMargin;
+      doc.text(label, textX, y, { align: "right" });
+      doc.setTextColor(20);
+      doc.setFont(undefined, "normal");
+      if (currentLogoImage && fmt) {
+        try { doc.addImage(currentLogoImage, fmt, textX - textW - 8, y - 5, 6, 6); } catch (e) {}
+      }
+    }
+  } catch (e) { console.warn(e); }
 }
 
 async function loadPublicBranding() {
@@ -1962,13 +2035,14 @@ function previewBrandsPDF() {
     '<div style="font-size:18px;font-weight:800;color:#1a1f36">eco — Our Used Brand</div>' +
     '<div style="font-size:12px;color:#888;margin-top:2px">Color City Ltd</div></div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 12px">';
-  list.forEach(function(b) {
+  list.forEach(function(b, idx) {
     var img = b.image
       ? '<img src="' + String(b.image).replace(/"/g, "&quot;") + '" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0">'
       : '<div style="width:56px;height:56px;border-radius:6px;background:#f1f5f9;border:1px solid #e2e8f0;flex-shrink:0"></div>';
     html += '<div style="display:flex;gap:8px;align-items:flex-start;min-height:56px">' +
       img +
       '<div style="min-width:0"><div style="font-weight:700;font-size:13px;color:#1a1f36;line-height:1.25;word-break:break-word">' +
+      (idx + 1) + '. ' +
       String(b.name || "").replace(/</g, "&lt;") +
       '</div><div style="font-size:11px;color:#6b7280;margin-top:3px">' +
       String(b.type || "").replace(/</g, "&lt;") +
@@ -1979,6 +2053,9 @@ function previewBrandsPDF() {
   if (!list.length) {
     html += '<p style="text-align:center;color:#888;margin-top:24px">কোনো সক্রিয় ব্র্যান্ড নেই</p>';
   }
+  html += '<div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:22px;padding-top:10px;border-top:1px dashed #ddd;font-size:11px;color:#888">' +
+    (currentLogoImage ? '<img src="' + currentLogoImage + '" alt="" style="width:18px;height:18px;object-fit:cover;border-radius:4px">' : '') +
+    '<span>Software Designer by ' + DESIGNER_NAME + '</span></div>';
   page.innerHTML = html;
   modal.style.display = "flex";
 }
@@ -1990,25 +2067,29 @@ function downloadBrandsPDF() {
   }
   var { jsPDF } = window.jspdf;
   var doc = new jsPDF({ unit: "mm", format: "a4" });
-  var pageW = 210, margin = 12;
-  var colW = (pageW - margin * 2) / 3;
-  var imgSize = 22, rowH = 30;
-  var x = margin, y = 22, col = 0;
+  var pageW = 210, pageH = 297;
+  var margin = 6.35; // 0.25in on all sides
+  var cols = 4, rows = 10; // 40 brands per page
+  var colW = (pageW - margin * 2) / cols;
+  var imgSize = 13, rowH = 25;
+  var gridStartY = 20;
+  var maxY = pageH - margin - 6; // leave room for footer
+  var x = margin, y = gridStartY, col = 0;
 
   doc.setFontSize(16);
   doc.setFont(undefined, "bold");
-  doc.text("eco — Our Used Brand", pageW / 2, 14, { align: "center" });
+  doc.text("eco — Our Used Brand", pageW / 2, 12, { align: "center" });
   doc.setFontSize(9);
   doc.setTextColor(120);
   doc.setFont(undefined, "normal");
-  doc.text("Color City Ltd", pageW / 2, 19, { align: "center" });
+  doc.text("Color City Ltd", pageW / 2, 17, { align: "center" });
   doc.setTextColor(20);
 
   var list = brands.filter(function(b) { return b.active !== false; });
-  list.forEach(function(b) {
-    if (y + rowH > 285) {
+  list.forEach(function(b, idx) {
+    if (y + rowH > maxY) {
       doc.addPage();
-      y = 20; col = 0; x = margin;
+      y = gridStartY; col = 0; x = margin;
     }
     if (b.image) {
       try { doc.addImage(b.image, "JPEG", x, y, imgSize, imgSize); }
@@ -2020,26 +2101,27 @@ function downloadBrandsPDF() {
       doc.setFillColor(248, 250, 252);
       doc.roundedRect(x, y, imgSize, imgSize, 1, 1, "FD");
     }
-    doc.setFontSize(10);
+    doc.setFontSize(8.5);
     doc.setFont(undefined, "bold");
-    var nameLines = doc.splitTextToSize(b.name || "", colW - imgSize - 4);
-    doc.text(nameLines, x + imgSize + 3, y + 6);
+    var nameLines = doc.splitTextToSize((idx + 1) + ". " + (b.name || ""), colW - imgSize - 3);
+    doc.text(nameLines.slice(0, 2), x + imgSize + 2, y + 4.5);
     doc.setFont(undefined, "normal");
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.setTextColor(110);
     var sub = (b.type || "") + (b.desc ? " · " + b.desc : "");
-    var descLines = doc.splitTextToSize(sub, colW - imgSize - 4);
-    doc.text(descLines.slice(0, 3), x + imgSize + 3, y + 12);
+    var descLines = doc.splitTextToSize(sub, colW - imgSize - 3);
+    doc.text(descLines.slice(0, 3), x + imgSize + 2, y + 4.5 + nameLines.slice(0, 2).length * 3.2 + 2);
     doc.setTextColor(20);
 
     col++;
-    if (col === 3) {
+    if (col === cols) {
       col = 0; x = margin; y += rowH;
     } else {
       x += colW;
     }
   });
 
+  addDesignerFooter(doc);
   doc.save("eco_brand_catalog.pdf");
   showMsg("PDF ডাউনলোড হয়েছে");
 }
@@ -2177,6 +2259,7 @@ function activeBrands() {
 
 function printSummary() {
   showTab("summary");
+  updatePrintFooterLogo();
   setTimeout(function() {
     window.print();
   }, 150);
@@ -2671,7 +2754,22 @@ async function startApp(){
   MONTHS.forEach(function(name,i){
     var opt=document.createElement("option"); opt.value=i; opt.textContent=name; sel.appendChild(opt);
   });
-  sel.value="1";
+
+  /* সবসময় বর্তমান (চলতি) মাস ও বছর ডিফল্ট হিসেবে সিলেক্ট থাকবে;
+     প্রয়োজনে ইউজার নিজে অন্য মাস/বছর সিলেক্ট করে দেখতে পারবেন। */
+  var ySel = document.getElementById("yearSelect");
+  var now = new Date();
+  var curY = now.getFullYear();
+  ySel.innerHTML = "";
+  for (var yy = curY - 2; yy <= curY + 3; yy++) {
+    var yOpt = document.createElement("option");
+    yOpt.value = String(yy);
+    yOpt.textContent = String(yy);
+    ySel.appendChild(yOpt);
+  }
+  ySel.value = String(curY);
+  sel.value = String(now.getMonth());
+
   loadPublicBranding();
   var gotCloud = await cloudLoadState();
   if (!gotCloud && sbClient) {
@@ -3241,6 +3339,7 @@ document.getElementById('dl-pdf').addEventListener('click', () => {
     }
   });
 
+  addDesignerFooter(doc);
   doc.save('eco_brand_catalog.pdf');
 });
 
