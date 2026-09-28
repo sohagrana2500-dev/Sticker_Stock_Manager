@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -1109,7 +1108,7 @@ input.cell-input {
       <div class="txt"><b>Sticker Stock</b><span>Management System</span></div>
     </div>
     <nav class="side-nav">
-      <div class="nav-hint">Manu</div>
+      <div class="nav-hint">মেনু</div>
       <button class="tab active" data-tab="entry" onclick="showTab('entry')" title="Daily Entry">
         <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M9 3v2h6V3M8 10h8M8 14h8M8 18h5"></path></svg></span>
         <span class="nav-label">Daily Entry</span>
@@ -1128,7 +1127,7 @@ input.cell-input {
       </button>
 <button class="tab" data-tab="settings" onclick="showTab('settings')" title="Settings">
         <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span>
-        <span class="nav-label">Settings</span>
+        <span class="nav-label">সেটিংস</span>
       </button>
     </nav>
     <div class="sidebar-foot">
@@ -1165,22 +1164,26 @@ input.cell-input {
 
 <div id="tab-brands" class="panel">
   <div class="card">
-    <h2>Add New Brand</h2>
-    <p class="footer-note">Name + Type (Required) · Image (Optional) · Arrange by dragging · PDF download available</p>
-    <div class="row">
-      <div><label>Brand Name</label><input type="text" id="newBrandName" placeholder="e.g. NEW SOFT"></div>
-      <div><label>Type</label>
+    <h2 id="brandAddTitle">Add New Brand</h2>
+    <p class="footer-note">নাম + Type আবশ্যক · ছবি অপশনাল · সিরিয়াল টেনে সাজান · PDF ডাউনলোড করা যাবে</p>
+    <div class="row" id="brandAddRow">
+      <div class="brand-admin-only"><label>Brand Name</label><input type="text" id="newBrandName" placeholder="e.g. NEW SOFT"></div>
+      <div class="brand-admin-only"><label>Type</label>
         <select id="newBrandType">
           <option value="CW">CW</option>
           <option value="HW">HW</option>
           <option value="Manual">Manual</option>
         </select>
       </div>
-      <div>
+      <div class="brand-admin-only">
+        <label>Description (অপশনাল)</label>
+        <input type="text" id="newBrandDesc" placeholder="ব্র্যান্ডের বিবরণ" style="min-width:200px">
+      </div>
+      <div class="brand-admin-only">
         <label>ছবি (অপশনাল)</label>
         <input type="file" id="newBrandImage" accept="image/*" style="min-width:180px">
       </div>
-      <button class="btn btn-primary" onclick="addBrand()">+ Add Brand</button>
+      <button class="btn btn-primary brand-admin-only" id="brandAddBtn" onclick="addBrand()">+ Add Brand</button>
       <button class="btn btn-secondary" onclick="previewBrandsPDF()">👁 PDF Preview</button>
       <button class="btn btn-secondary" onclick="downloadBrandsPDF()">⬇ PDF</button>
     </div>
@@ -1191,12 +1194,12 @@ input.cell-input {
   </div>
   <div class="card">
     <h2>Brand List (<span id="brandCount">0</span>)</h2>
-    <p class="footer-note">⠿ Swipe to change series — Daily Entry / Summary in the same order · View images (👁)</p>
+    <p class="footer-note">⠿ টেনে সিরিয়াল বদলান — Daily Entry / Summary একই ক্রমে · ছবি থাকলে 👁 ভিউ</p>
     <div class="table-wrap">
       <table id="brandTable">
         <thead>
           <tr>
-            <th>#</th><th>সিরিয়াল</th><th>ছবি</th><th>Brand Name</th><th>Type</th><th>Status</th><th>Action</th>
+            <th>#</th><th>সিরিয়াল</th><th>ছবি</th><th>Brand Name</th><th>Type</th><th>Description</th><th>Status</th><th>Action</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -1299,7 +1302,7 @@ input.cell-input {
   <div class="card">
     <h2>Production Data Upload</h2>
     <p class="footer-note" style="margin-bottom:12px">
-      CW and HW are separate files. With each upload, the old data of that type will be deleted and replaced with the new data.
+      CW ও HW <b>আলাদা ফাইল</b>। প্রতি আপলোডে সেই টাইপের <b>পুরনো ডেটা মুছে</b> নতুন দিয়ে রিপ্লেস হবে।
     </p>
     <div class="prod-box">
       <div class="prod-card cw">
@@ -1393,7 +1396,7 @@ input.cell-input {
   <!-- RANK / SORT TAB -->
   <div class="cat-panel" id="panel-rank">
     <div class="rank-hint">
-      ⠿ Drag the handles to arrange the brands in your preferred order. The order will be saved automatically.
+      ⠿ হ্যান্ডেল ধরে টেনে নিয়ে ব্র্যান্ডগুলো আপনার পছন্দের ক্রমে সাজান। ক্রম স্বয়ংক্রিয়ভাবে সংরক্ষিত হবে।
     </div>
     <div class="rank-list" id="rank-list"></div>
     <div class="empty-state" id="rank-empty" style="display:none;">
@@ -1811,8 +1814,8 @@ async function createOrUpdateUser() {
   if (!sbClient || !window.SSCM_TOKEN) return;
   var uname = document.getElementById("newUserName").value.trim();
   var pass = document.getElementById("newUserPass").value;
-  if (!uname || pass.length < 3) {
-    showUserMsg("✕ ইউজারনেম দিন এবং পাসওয়ার্ড কমপক্ষে 3 অক্ষরের হতে হবে।", false);
+  if (!uname || pass.length < 4) {
+    showUserMsg("✕ ইউজারনেম দিন এবং পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।", false);
     return;
   }
   try {
@@ -1903,6 +1906,9 @@ function currentMonth(){ return parseInt(document.getElementById("monthSelect").
 function periodKey(){ return currentYear() + "|" + MONTHS[currentMonth()]; }
 
 function onPeriodChange(){ renderEntry(); renderSummary(); saveData(); }
+
+function isAdmin(){ return window.SSCM_USER === "admin"; }
+function denyNonAdmin(){ showMsg("শুধু অ্যাডমিন ব্র্যান্ড পরিবর্তন করতে পারবেন", false); }
 
 function showTab(id) {
   if (id === "settings" && window.SSCM_USER !== "admin") { id = "entry"; }
@@ -2004,6 +2010,7 @@ function closeBrandImg() {
   document.getElementById("brandImgModal").style.display = "none";
 }
 function setBrandImage(idx) {
+  if (!isAdmin()) { denyNonAdmin(); return; }
   var inp = document.createElement("input");
   inp.type = "file";
   inp.accept = "image/*";
@@ -2127,13 +2134,16 @@ function downloadBrandsPDF() {
 }
 
 function addBrand() {
+  if (!isAdmin()) { denyNonAdmin(); return; }
   var name = document.getElementById("newBrandName").value.trim();
+  var descIn = document.getElementById("newBrandDesc");
+  var desc = descIn ? descIn.value.trim() : "";
   var type = document.getElementById("newBrandType").value;
   if (!name) { showMsg("Enter brand name", false); return; }
   if (brands.some(function(b){ return b.name.toUpperCase()===name.toUpperCase(); })) {
     showMsg("Already exists", false); return;
   }
-  brands.push({name:name, type:type, active:true, image: pendingBrandImage || ""});
+  brands.push({name:name, type:type, desc:desc, active:true, image: pendingBrandImage || ""});
   Object.keys(data).forEach(function(y){
     Object.keys(data[y]).forEach(function(m){
       data[y][m].pstock[name]=0; data[y][m].nstock[name]=0;
@@ -2141,17 +2151,82 @@ function addBrand() {
     });
   });
   document.getElementById("newBrandName").value="";
+  if (descIn) descIn.value="";
   clearNewBrandImage();
   saveData(); renderBrands(); renderEntry(); renderSummary();
   showMsg("Added: "+name);
 }
 function deleteBrand(idx) {
+  if (!isAdmin()) { denyNonAdmin(); return; }
   var b = brands[idx];
   if (b.name==="BLANK" || b.name.indexOf("BOXL")>=0) { showMsg("Protected", false); return; }
   if (!confirm("Remove "+b.name+"?")) return;
   brands.splice(idx,1); saveData(); renderBrands(); renderEntry(); renderSummary();
 }
+function applyBrandPermissions() {
+  var admin = isAdmin();
+  document.querySelectorAll(".brand-admin-only").forEach(function(el){ el.style.display = admin ? "" : "none"; });
+  var t = document.getElementById("brandAddTitle");
+  if (t) t.textContent = admin ? "Add New Brand" : "Brands (শুধু দেখার অনুমতি)";
+}
+
+function editBrand(idx) {
+  if (!isAdmin()) { denyNonAdmin(); return; }
+  var b = brands[idx]; if (!b) return;
+  var old = document.getElementById("brandEditModal"); if (old) old.remove();
+  var protectedBrand = (b.name === "BLANK" || (b.name && b.name.indexOf("BOXL") >= 0));
+  var esc = function(v){ return String(v || "").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); };
+  var m = document.createElement("div");
+  m.id = "brandEditModal";
+  m.className = "no-print";
+  m.style.cssText = "position:fixed;inset:0;z-index:300;background:rgba(11,18,48,.55);display:flex;align-items:center;justify-content:center";
+  m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:22px;max-width:460px;width:92%;box-shadow:0 16px 40px rgba(0,0,0,.25)">' +
+    '<h3 style="margin:0 0 14px;color:#1a365d">✏️ Brand Edit</h3>' +
+    '<label>Brand Name</label><input type="text" id="editBrandName" value="' + esc(b.name) + '"' + (protectedBrand ? ' disabled' : '') + ' style="width:100%;margin-bottom:10px">' +
+    '<label>Type</label><select id="editBrandType" style="width:100%;margin-bottom:10px">' +
+      ["CW","HW","Manual"].map(function(t){ return '<option value="' + t + '"' + (b.type === t ? " selected" : "") + '>' + t + '</option>'; }).join("") +
+    '</select>' +
+    '<label>Description</label><textarea id="editBrandDesc" rows="3" style="width:100%;margin-bottom:14px">' + esc(b.desc) + '</textarea>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end">' +
+      '<button class="btn btn-secondary" onclick="document.getElementById(\'brandEditModal\').remove()">বাতিল</button>' +
+      '<button class="btn btn-primary" onclick="saveBrandEdit(' + idx + ')">সেভ করুন</button>' +
+    '</div></div>';
+  document.body.appendChild(m);
+}
+
+function saveBrandEdit(idx) {
+  if (!isAdmin()) { denyNonAdmin(); return; }
+  var b = brands[idx]; if (!b) return;
+  var protectedBrand = (b.name === "BLANK" || (b.name && b.name.indexOf("BOXL") >= 0));
+  var newName = protectedBrand ? b.name : document.getElementById("editBrandName").value.trim();
+  var newType = document.getElementById("editBrandType").value;
+  var newDesc = document.getElementById("editBrandDesc").value.trim();
+  if (!newName) { showMsg("Brand name দিন", false); return; }
+  if (newName.toUpperCase() !== b.name.toUpperCase() || newName !== b.name) {
+    if (brands.some(function(x, j){ return j !== idx && x.name.toUpperCase() === newName.toUpperCase(); })) {
+      showMsg("এই নামে ব্র্যান্ড আগে থেকেই আছে", false); return;
+    }
+  }
+  var oldName = b.name;
+  if (newName !== oldName) {
+    /* নাম বদলালে আগের সব মাসের স্টক/ডেইলি ডেটা নতুন নামে সরিয়ে নেওয়া হয় */
+    Object.keys(data).forEach(function(y){
+      Object.keys(data[y]).forEach(function(mm){
+        var mo = data[y][mm];
+        if (mo.pstock && oldName in mo.pstock) { mo.pstock[newName] = mo.pstock[oldName]; delete mo.pstock[oldName]; }
+        if (mo.nstock && oldName in mo.nstock) { mo.nstock[newName] = mo.nstock[oldName]; delete mo.nstock[oldName]; }
+        (mo.daily || []).forEach(function(d){ if (oldName in d) { d[newName] = d[oldName]; delete d[oldName]; } });
+      });
+    });
+  }
+  b.name = newName; b.type = newType; b.desc = newDesc;
+  var modal = document.getElementById("brandEditModal"); if (modal) modal.remove();
+  saveData(); renderBrands(); renderEntry(); renderSummary();
+  showMsg("আপডেট হয়েছে: " + newName);
+}
+
 function renderBrands() {
+  applyBrandPermissions();
   document.getElementById("brandCount").textContent = brands.length;
   document.querySelector("#brandTable tbody").innerHTML = brands.map(function(b, i) {
     if (b.active === undefined) b.active = true;
@@ -2177,17 +2252,22 @@ function renderBrands() {
       ? '<button class="btn btn-primary" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="viewBrandImage(' + i + ')">👁</button>'
       : '';
     var photoBtn = '<button class="btn btn-secondary" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="setBrandImage(' + i + ')" title="ছবি যোগ/বদল">📷</button>';
-    return '<tr class="brand-drag-row" draggable="true" data-idx="' + i + '"' + (b.active ? "" : ' style="opacity:0.55"') + "><td>" + (i + 1) +
-      '</td><td style="white-space:nowrap"><span class="drag-handle" title="টেনে সরান">⠿</span> ' + upBtn + downBtn +
+    var admin = isAdmin();
+    var descCell = b.desc ? String(b.desc).replace(/</g, "&lt;") : '<span style="color:#cbd5e0;font-size:.75rem">—</span>';
+    var editBtn = '<button class="btn btn-primary" style="padding:3px 8px;font-size:0.75rem;margin:1px;background:#2b6cb0" onclick="editBrand(' + i + ')" title="এডিট">✏️ এডিট</button>';
+    if (!admin) { upBtn = downBtn = ""; }
+    return '<tr class="brand-drag-row" ' + (admin ? 'draggable="true" ' : '') + 'data-idx="' + i + '"' + (b.active ? "" : ' style="opacity:0.55"') + "><td>" + (i + 1) +
+      '</td><td style="white-space:nowrap">' + (admin ? '<span class="drag-handle" title="টেনে সরান">⠿</span> ' : '') + upBtn + downBtn +
       '</td><td>' + imgCell +
       '</td><td style="text-align:left;font-weight:600">' + b.name +
       '</td><td><span class="badge badge-' + b.type.toLowerCase() + '">' + b.type +
-      "</span></td><td>" + statusBadge + "</td><td>" + viewBtn + photoBtn + " " + toggleBtn + " " + delBtn + "</td></tr>";
+      "</span></td><td style=\"text-align:left;max-width:260px;font-size:.85rem\">" + descCell + "</td><td>" + statusBadge + "</td><td>" + (admin ? (viewBtn + editBtn + photoBtn + " " + toggleBtn + " " + delBtn) : viewBtn) + "</td></tr>";
   }).join("");
   setupBrandDrag();
 }
 
 function moveBrand(idx, dir) {
+  if (!isAdmin()) { denyNonAdmin(); return; }
   var j = idx + dir;
   if (j < 0 || j >= brands.length) return;
   var tmp = brands[idx];
@@ -2203,6 +2283,7 @@ function moveBrand(idx, dir) {
 function setupBrandDrag() {
   var tbody = document.querySelector("#brandTable tbody");
   if (!tbody) return;
+  if (!isAdmin()) return;
   var dragIdx = null;
   tbody.querySelectorAll("tr.brand-drag-row").forEach(function(row) {
     row.addEventListener("dragstart", function(e) {
@@ -2243,6 +2324,7 @@ function setupBrandDrag() {
 }
 
 function toggleBrand(idx) {
+  if (!isAdmin()) { denyNonAdmin(); return; }
   if (brands[idx].active === undefined) brands[idx].active = true;
   brands[idx].active = !brands[idx].active;
   saveData();
