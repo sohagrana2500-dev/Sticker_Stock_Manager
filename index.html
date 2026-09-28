@@ -1180,7 +1180,7 @@ input.cell-input {
         <input type="text" id="newBrandDesc" placeholder="ব্র্যান্ডের বিবরণ" style="min-width:200px">
       </div>
       <div class="brand-admin-only">
-        <label>ছবি (অপশনাল)</label>
+        <label>Image (অপশনাল)</label>
         <input type="file" id="newBrandImage" accept="image/*" style="min-width:180px">
       </div>
       <button class="btn btn-primary brand-admin-only" id="brandAddBtn" onclick="addBrand()">+ Add Brand</button>
@@ -1189,17 +1189,17 @@ input.cell-input {
     </div>
     <div id="newBrandImagePreview" style="display:none;margin-top:10px">
       <img id="newBrandImageImg" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid #e2e8f0">
-      <button type="button" class="btn btn-secondary" style="margin-left:8px;padding:4px 10px;font-size:.75rem" onclick="clearNewBrandImage()">ছবি সরান</button>
+      <button type="button" class="btn btn-secondary" style="margin-left:8px;padding:4px 10px;font-size:.75rem" onclick="clearNewBrandImage()">Image সরান</button>
     </div>
   </div>
   <div class="card">
     <h2>Brand List (<span id="brandCount">0</span>)</h2>
-    <p class="footer-note">⠿ টেনে সিরিয়াল বদলান — Daily Entry / Summary একই ক্রমে · ছবি থাকলে 👁 ভিউ</p>
+   
     <div class="table-wrap">
       <table id="brandTable">
         <thead>
           <tr>
-            <th>#</th><th>সিরিয়াল</th><th>ছবি</th><th>Brand Name</th><th>Type</th><th>Description</th><th>Status</th><th>Action</th>
+            <th>#</th><th>Sl</th><th>Image</th><th>Brand Name</th><th>Type</th><th>Description</th><th>Status</th><th>Action</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -1361,9 +1361,9 @@ input.cell-input {
       <label for="f-name">ব্র্যান্ডের নাম *</label>
       <input type="text" id="f-name" placeholder="যেমন: ecoSPUN" autocomplete="off">
 
-      <label>ছবি *</label>
+      <label>Image *</label>
       <div class="drop" id="drop-zone">
-        <div id="drop-placeholder">ছবি সিলেক্ট করতে ক্লিক করুন<br><span style="font-size:11px;opacity:.7">বা ড্র্যাগ করে ছেড়ে দিন</span></div>
+        <div id="drop-placeholder">Image সিলেক্ট করতে ক্লিক করুন<br><span style="font-size:11px;opacity:.7">বা ড্র্যাগ করে ছেড়ে দিন</span></div>
         <img id="preview-img" style="display:none;" alt="preview">
       </div>
       <input type="file" id="f-image" accept="image/*" style="display:none;">
@@ -1424,7 +1424,7 @@ input.cell-input {
 <!-- Crop / adjust modal -->
 <div class="modal-overlay" id="crop-modal">
   <div class="crop-box">
-    <h3>ছবি অ্যাডজাস্ট করুন</h3>
+    <h3>Image অ্যাডজাস্ট করুন</h3>
     <div class="hint">টেনে (drag) সরান এবং স্লাইডার দিয়ে ছোট-বড় করুন</div>
     <div class="crop-circle-wrap" id="crop-wrap">
       <canvas id="crop-canvas" width="280" height="280"></canvas>
@@ -2000,7 +2000,7 @@ function clearNewBrandImage() {
 }
 function viewBrandImage(idx) {
   var b = brands[idx];
-  if (!b || !b.image) { showMsg("এই ব্র্যান্ডে ছবি নেই", false); return; }
+  if (!b || !b.image) { showMsg("এই ব্র্যান্ডে Image নেই", false); return; }
   document.getElementById("brandImgModalImg").src = b.image;
   document.getElementById("brandImgModalName").textContent = b.name;
   var m = document.getElementById("brandImgModal");
@@ -2022,7 +2022,7 @@ function setBrandImage(idx) {
       brands[idx].image = ev.target.result;
       saveData();
       renderBrands();
-      showMsg("ছবি যোগ: " + brands[idx].name);
+      showMsg("Image যোগ: " + brands[idx].name);
     };
     reader.readAsDataURL(file);
   };
@@ -2058,7 +2058,7 @@ function previewBrandsPDF() {
   });
   html += "</div>";
   if (!list.length) {
-    html += '<p style="text-align:center;color:#888;margin-top:24px">কোনো সক্রিয় ব্র্যান্ড নেই</p>';
+    html += '<p style="text-align:center;color:#888;margin-top:24px">কোনো Active ব্র্যান্ড নেই</p>';
   }
   html += '<div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:22px;padding-top:10px;border-top:1px dashed #ddd;font-size:11px;color:#888">' +
     (currentLogoImage ? '<img src="' + currentLogoImage + '" alt="" style="width:18px;height:18px;object-fit:cover;border-radius:4px">' : '') +
@@ -2167,7 +2167,7 @@ function applyBrandPermissions() {
   var admin = isAdmin();
   document.querySelectorAll(".brand-admin-only").forEach(function(el){ el.style.display = admin ? "" : "none"; });
   var t = document.getElementById("brandAddTitle");
-  if (t) t.textContent = admin ? "Add New Brand" : "Brands (শুধু দেখার অনুমতি)";
+  if (t) t.textContent = admin ? "Add New Brand" : "Brands";
 }
 
 function editBrand(idx) {
@@ -2231,11 +2231,11 @@ function renderBrands() {
   document.querySelector("#brandTable tbody").innerHTML = brands.map(function(b, i) {
     if (b.active === undefined) b.active = true;
     var statusBadge = b.active
-      ? '<span class="badge" style="background:#c6f6d5;color:#22543d">সক্রিয়</span>'
+      ? '<span class="badge" style="background:#c6f6d5;color:#22543d">Active</span>'
       : '<span class="badge" style="background:#fed7d7;color:#742a2a">নিষ্ক্রিয়</span>';
     var toggleBtn = b.active
       ? '<button class="btn btn-secondary" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="toggleBrand(' + i + ')">নিষ্ক্রিয়</button>'
-      : '<button class="btn btn-primary" style="padding:3px 8px;font-size:0.75rem;margin:1px;background:#2f855a" onclick="toggleBrand(' + i + ')">সক্রিয়</button>';
+      : '<button class="btn btn-primary" style="padding:3px 8px;font-size:0.75rem;margin:1px;background:#2f855a" onclick="toggleBrand(' + i + ')">Active</button>';
     var delBtn = (b.name === "BLANK" || (b.name && b.name.indexOf("BOXL") >= 0))
       ? '<span style="color:#a0aec0">Protected</span>'
       : '<button class="btn btn-danger" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="deleteBrand(' + i + ')">ডিলেট</button>';
@@ -2251,7 +2251,7 @@ function renderBrands() {
     var viewBtn = b.image
       ? '<button class="btn btn-primary" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="viewBrandImage(' + i + ')">👁</button>'
       : '';
-    var photoBtn = '<button class="btn btn-secondary" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="setBrandImage(' + i + ')" title="ছবি যোগ/বদল">📷</button>';
+    var photoBtn = '<button class="btn btn-secondary" style="padding:3px 8px;font-size:0.75rem;margin:1px" onclick="setBrandImage(' + i + ')" title="Image যোগ/বদল">📷</button>';
     var admin = isAdmin();
     var descCell = b.desc ? String(b.desc).replace(/</g, "&lt;") : '<span style="color:#cbd5e0;font-size:.75rem">—</span>';
     var editBtn = '<button class="btn btn-primary" style="padding:3px 8px;font-size:0.75rem;margin:1px;background:#2b6cb0" onclick="editBrand(' + i + ')" title="এডিট">✏️ এডিট</button>';
@@ -2277,7 +2277,7 @@ function moveBrand(idx, dir) {
   renderBrands();
   renderEntry();
   renderSummary();
-  showMsg("সিরিয়াল আপডেট: " + brands[j].name);
+  showMsg("Sl আপডেট: " + brands[j].name);
 }
 
 function setupBrandDrag() {
@@ -2318,7 +2318,7 @@ function setupBrandDrag() {
       renderBrands();
       renderEntry();
       renderSummary();
-      showMsg("সিরিয়াল আপডেট (ড্র্যাগ)");
+      showMsg("Sl আপডেট (ড্র্যাগ)");
     });
   });
 }
@@ -2331,11 +2331,11 @@ function toggleBrand(idx) {
   renderBrands();
   renderEntry();
   renderSummary();
-  showMsg(brands[idx].name + " → " + (brands[idx].active ? "সক্রিয়" : "নিষ্ক্রিয়"));
+  showMsg(brands[idx].name + " → " + (brands[idx].active ? "Active" : "নিষ্ক্রিয়"));
 }
 
 function activeBrands() {
-  /* Brand List-এর সিরিয়াল অনুযায়ী — array order preserve */
+  /* Brand List-এর Sl অনুযায়ী — array order preserve */
   return brands.filter(function(b) { return b.active !== false; });
 }
 
@@ -3173,7 +3173,7 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
     return;
   }
   if (!pendingImage) {
-    msg.textContent = 'একটি ছবি সিলেক্ট করুন।';
+    msg.textContent = 'একটি Image সিলেক্ট করুন।';
     msg.className = 'cat-msg error';
     return;
   }
