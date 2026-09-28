@@ -1108,7 +1108,7 @@ input.cell-input {
       <div class="txt"><b>Sticker Stock</b><span>Management System</span></div>
     </div>
     <nav class="side-nav">
-      <div class="nav-hint">মেনু</div>
+      <div class="nav-hint"> Manu</div>
       <button class="tab active" data-tab="entry" onclick="showTab('entry')" title="Daily Entry">
         <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M9 3v2h6V3M8 10h8M8 14h8M8 18h5"></path></svg></span>
         <span class="nav-label">Daily Entry</span>
@@ -1165,7 +1165,7 @@ input.cell-input {
 <div id="tab-brands" class="panel">
   <div class="card">
     <h2 id="brandAddTitle">Add New Brand</h2>
-    <p class="footer-note">নাম + Type আবশ্যক · ছবি অপশনাল · সিরিয়াল টেনে সাজান · PDF ডাউনলোড করা যাবে</p>
+    
     <div class="row" id="brandAddRow">
       <div class="brand-admin-only"><label>Brand Name</label><input type="text" id="newBrandName" placeholder="e.g. NEW SOFT"></div>
       <div class="brand-admin-only"><label>Type</label>
@@ -1254,7 +1254,7 @@ input.cell-input {
     </h2>
     <div id="summaryPrintFooter" class="print-footer">
       <img id="summaryPrintLogo" src="" alt="" style="display:none">
-      <span>Software Designer by SOHAG RANA</span>
+      <span>  SOHAG RANA</span>
     </div>
     <div class="sum-header">
       <div><span class="lbl">YEAR :</span> <span class="val" id="sumYear">2026</span></div>
@@ -1302,7 +1302,7 @@ input.cell-input {
   <div class="card">
     <h2>Production Data Upload</h2>
     <p class="footer-note" style="margin-bottom:12px">
-      CW ও HW <b>আলাদা ফাইল</b>। প্রতি আপলোডে সেই টাইপের <b>পুরনো ডেটা মুছে</b> নতুন দিয়ে রিপ্লেস হবে।
+    
     </p>
     <div class="prod-box">
       <div class="prod-card cw">
@@ -1678,7 +1678,7 @@ function pdfImageFormat(dataUrl) {
   return /png/i.test(m[1]) ? "PNG" : "JPEG";
 }
 
-/* Stamps "Software Designer by …" + logo on every page of a jsPDF document, right-aligned */
+/* Stamps "  …" + logo on every page of a jsPDF document, right-aligned */
 function addDesignerFooter(doc) {
   try {
     var pageCount = doc.internal.getNumberOfPages();
@@ -1692,7 +1692,7 @@ function addDesignerFooter(doc) {
       doc.setFontSize(8);
       doc.setFont(undefined, "italic");
       doc.setTextColor(120);
-      var label = "Software Designer by " + DESIGNER_NAME;
+      var label = "  " + DESIGNER_NAME;
       var textW = doc.getTextWidth(label);
       var textX = pageW - rightMargin;
       doc.text(label, textX, y, { align: "right" });
@@ -2062,7 +2062,7 @@ function previewBrandsPDF() {
   }
   html += '<div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:22px;padding-top:10px;border-top:1px dashed #ddd;font-size:11px;color:#888">' +
     (currentLogoImage ? '<img src="' + currentLogoImage + '" alt="" style="width:18px;height:18px;object-fit:cover;border-radius:4px">' : '') +
-    '<span>Software Designer by ' + DESIGNER_NAME + '</span></div>';
+    '<span>  ' + DESIGNER_NAME + '</span></div>';
   page.innerHTML = html;
   modal.style.display = "flex";
 }
