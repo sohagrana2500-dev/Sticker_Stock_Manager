@@ -225,7 +225,10 @@ input.cell-input.extra{width:55px}input.cell-input.text{width:80px;text-align:le
   #tab-summary th, #tab-summary td { border: 1px solid #333; padding: 3pt 2pt; font-size: 9pt; }
   #tab-summary th { background: #1a365d !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   #tab-summary .table-wrap { max-height: none !important; overflow: visible !important; border: none !important; }
-  #tab-summary .warn-box { display: none !important; }
+  /* ইয়োলো সতর্কবার্তা প্রিন্টে দেখাবে (শুধু যখন স্ক্রিনে দেখা যায়; খালি থাকলে লুকানো থাকবে) */
+  #tab-summary .warn-box { margin: 6pt 0; padding: 4pt 6pt; font-size: 10pt; border: 1px solid #b7791f !important; background: #fefcbf !important; color: #744210 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #tab-summary .warn-box[style*="display: none"] { display: none !important; }
+  #tab-summary .warn-box:not([style*="display: none"]) { display: block !important; }
   #tab-summary input {
     border: none !important;
     background: transparent !important;
