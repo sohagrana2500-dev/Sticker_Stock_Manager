@@ -1241,6 +1241,7 @@ input.cell-input {
     <div class="row">
       <button class="btn btn-secondary" onclick="prevMonth()">Prev</button>
       <button class="btn btn-secondary" onclick="nextMonth()">Next</button>
+      <button class="btn btn-secondary" onclick="syncPstockFromPrevBtn()" title="আগের মাসের N-STOCK দিয়ে এই মাসের P-STOCK বদলে দিন">⬇ আগের মাসের N-STOCK → P-STOCK</button>
     </div>
     <div id="entry-focus-bar" class="no-print">Date: <b id="focus-date">—</b><span>·</span>Brand: <b id="focus-brand">—</b></div>
     <div class="table-wrap" id="entryTableWrap"><table id="entryTable"><thead></thead><tbody></tbody></table></div>
@@ -2023,6 +2024,48 @@ function calcGT(y,m,brand) {
 }
 function calcClosing(y,m,brand){ return calcGT(y,m,brand) - Number(data[y][m].nstock[brand]||0); }
 
+/* ===== মাস ক্লোজিং: আগের মাসের N-STOCK → পরের মাসের P-STOCK ===== */
+function prevPeriod(y,m){ return m===0 ? {y:y-1,m:11} : {y:y,m:m-1}; }
+function nextPeriod(y,m){ return m===11 ? {y:y+1,m:0} : {y:y,m:m+1}; }
+
+/* এই মাসের N-STOCK কে পরের মাসের P-STOCK এ কপি করে (ডিসেম্বর → পরের বছরের জানুয়ারিও কাজ করে) */
+function carryNstockToNext(y,m){
+  var np = nextPeriod(y,m);
+  ensureMonth(y,m); ensureMonth(np.y,np.m);
+  brands.forEach(function(b){
+    data[np.y][np.m].pstock[b.name] = Number(data[y][m].nstock[b.name]||0);
+  });
+  return np;
+}
+
+/* আগের মাসের N-STOCK থেকে এই মাসের P-STOCK ভরে।
+   force=false : শুধু যেসব ব্র্যান্ডের P-STOCK এখন 0 (কিছু ওভাররাইট করে না)
+   force=true  : সব ব্র্যান্ডের P-STOCK আগের মাসের N-STOCK দিয়ে বদলে দেয় */
+function fillPstockFromPrev(y,m,force){
+  var pp = prevPeriod(y,m);
+  if (!data[pp.y] || !data[pp.y][pp.m]) return 0;
+  ensureMonth(y,m);
+  var changed = 0;
+  brands.forEach(function(b){
+    var prevN = Number(data[pp.y][pp.m].nstock[b.name]||0);
+    var curP  = Number(data[y][m].pstock[b.name]||0);
+    if (force ? (curP !== prevN) : (curP === 0 && prevN !== 0)) {
+      data[y][m].pstock[b.name] = prevN; changed++;
+    }
+  });
+  return changed;
+}
+
+function syncPstockFromPrevBtn(){
+  var y = currentYear(), m = currentMonth();
+  var pp = prevPeriod(y,m);
+  if (!data[pp.y] || !data[pp.y][pp.m]) { showMsg("আগের মাসের কোনো ডেটা নেই", false); return; }
+  if (!confirm(MONTHS[pp.m]+" "+pp.y+" এর N-STOCK দিয়ে "+MONTHS[m]+" "+y+" এর সব P-STOCK বদলাতে চান?")) return;
+  var n = fillPstockFromPrev(y,m,true);
+  saveData(); renderEntry(); renderSummary();
+  showMsg(n ? ("P-STOCK আপডেট হয়েছে ("+n+" টি ব্র্যান্ড)") : "P-STOCK আগে থেকেই আগের মাসের N-STOCK এর সমান");
+}
+
 function getBrandProd(y, m, brandName) {
   var key = y + "|" + MONTHS[m];
   var map = production.byBrand && production.byBrand[key];
@@ -2533,6 +2576,7 @@ function renderEntry() {
   focusedDay = null;
   var y = currentYear(), m = currentMonth();
   ensureMonth(y,m);
+  if (fillPstockFromPrev(y,m,false)) saveData();   /* 0 থাকা P-STOCK আগের মাসের N-STOCK থেকে আসবে */
   var list = activeBrands();
   document.getElementById("entryTitle").textContent = "Daily Stock Entry — "+MONTHS[m]+" "+y;
   var thead = document.querySelector("#entryTable thead");
@@ -2612,7 +2656,7 @@ function renderEntry() {
     var day=t.getAttribute("data-day"), field=t.getAttribute("data-field");
     var y2=currentYear(), m2=currentMonth();
     if(kind==="pstock"){ if(isSpecialLocked(y2,m2,"pstock")){ showMsg("P-STOCK লক আছে — আগে আনলক করুন", false); renderEntry(); return; } data[y2][m2].pstock[brand]=t.value===""?0:t.value; saveData(); renderEntry(); }
-    else if(kind==="nstock"){ if(isSpecialLocked(y2,m2,"nstock")){ showMsg("N-STOCK লক আছে — আগে আনলক করুন", false); renderEntry(); return; } data[y2][m2].nstock[brand]=t.value===""?0:t.value; saveData(); renderEntry(); }
+    else if(kind==="nstock"){ if(isSpecialLocked(y2,m2,"nstock")){ showMsg("N-STOCK লক আছে — আগে আনলক করুন", false); renderEntry(); return; } data[y2][m2].nstock[brand]=t.value===""?0:t.value; var np2=carryNstockToNext(y2,m2); saveData(); renderEntry(); showMsg("N-STOCK সেভ হয়েছে — "+MONTHS[np2.m]+" "+np2.y+" এর P-STOCK ও আপডেট হয়েছে"); }
     else if(kind==="daily"){ if(isDayLocked(y2,m2,parseInt(day,10))){ showMsg("এই তারিখ লক আছে — আগে আনলক করুন", false); renderEntry(); return; } data[y2][m2].daily[parseInt(day,10)][brand]=t.value; saveData(); renderEntry(); }
     else if(kind==="extra"){
       if(isDayLocked(y2,m2,parseInt(day,10))){ showMsg("এই তারিখ লক আছে — আগে আনলক করুন", false); renderEntry(); return; }
@@ -2824,18 +2868,29 @@ function parseXlsxWorkbook(wb, uploadType) {
     // HW - REPLACE hw monthly totals only
     var colYear = findCol(["year","yaer"]);
     var colMonth = findCol(["month"]);
-    var colDel = findCol(["del pcs","delpcs","del qty","production"]);
-    // HW sheet uses Del pcs at index 11 typically
     if (!colYear || !colMonth) {
       showMsg("HW file needs: Year, Month columns", false); return;
     }
-    // try Del pcs column
+    /* অগ্রাধিকার অনুযায়ী কলাম খোঁজা: আগে শুধু "Del pcs"; না পেলে তবেই অন্য নাম।
+       (আগে শিটের কলাম-ক্রম ধরে প্রথম মিলটা নিত, তাই "Del qty" আগে থাকলে সেটাই ধরত) */
+    function norm(k){ return k.toString().toLowerCase().replace(/[\r\n\.]+/g," ").replace(/\s+/g," ").trim(); }
+    function findColPriority(cands) {
+      for (var j=0;j<cands.length;j++) {            // ১) পুরো নাম হুবহু মিললে
+        for (var i=0;i<keys.length;i++) if (norm(keys[i]) === cands[j]) return keys[i];
+      }
+      for (var j2=0;j2<cands.length;j2++) {         // ২) নামের মধ্যে থাকলে
+        for (var i2=0;i2<keys.length;i2++) if (norm(keys[i2]).indexOf(cands[j2]) >= 0) return keys[i2];
+      }
+      return null;
+    }
+    var colDel = findColPriority(["del pcs","delpcs"]);
+    var delWarn = "";
     if (!colDel) {
-      // try common HW columns: Del pcs, Del qty
-      colDel = findCol(["del pcs", "delpcs", "del qty", "delqty"]);
+      colDel = findColPriority(["del qty","delqty","production"]);
+      if (colDel) delWarn = " ⚠ 'Del pcs' কলাম পাওয়া যায়নি, '" + colDel + "' ব্যবহার হয়েছে";
     }
     if (!colDel) {
-      showMsg("HW file needs Del pcs (or Production) column", false); return;
+      showMsg("HW file needs a 'Del pcs' column", false); return;
     }
     var oldMonthly = production.monthly || {};
     var newMonthly = {};
@@ -2847,7 +2902,7 @@ function parseXlsxWorkbook(wb, uploadType) {
     rows.forEach(function(r) {
       var y = parseInt(r[colYear], 10);
       var mon = String(r[colMonth]||"").trim();
-      var pval = parseFloat(r[colDel]);
+      var pval = parseFloat(String(r[colDel]).replace(/,/g,""));
       if (!y || !mon || isNaN(pval)) return;
       var key = y + "|" + mon;
       hwSum[key] = (hwSum[key]||0) + pval;
@@ -2859,7 +2914,7 @@ function parseXlsxWorkbook(wb, uploadType) {
     });
     production.monthly = newMonthly;
     saveData(); renderProdInfo(); renderSummary();
-    showMsg("HW data REPLACED (" + count + " rows from " + sheetName + ")");
+    showMsg("HW data REPLACED (" + count + " rows from " + sheetName + ", কলাম: " + colDel + ")" + delWarn, !delWarn);
   }
 }
 
